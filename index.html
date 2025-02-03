@@ -5,41 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fashadow</title>
   <style>
-    /* Reset and basic styles */
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       background-color: #222;
       font-family: Arial, sans-serif;
-    }
-    
-    /* Center the main content (hexagon) */
-    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative; /* for positioning the download link */
-    }
-    
-    /* Styles for the hexagon */
-    .hexagon {
       position: relative;
-      width: 400px;  /* Adjust size as needed */
-      height: 400px;
-      background: #e74c3c;
-      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-size: 2rem;
-      font-weight: bold;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
-    
-    /* Styles for the download link at the top */
+
     .download-link {
       position: absolute;
       top: 20px;
@@ -53,18 +30,29 @@
       border-radius: 4px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
+
+    .hexagon {
+      width: 400px;
+      height: 400px;
+      background: #e74c3c;
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
   </style>
 </head>
 <body>
-  <!-- Download link at the top of the page -->
-  <a 
-    href="https://drive.google.com/file/d/1Lrj95Vd3GkxXwrjlCk2SwNNZAb_1WmKJ/view?usp=drivesdk" 
-    class="download-link" 
-    target="_blank"
-  >
+  <!-- Link to another page on your site -->
+  <a href="character-creation.html" class="download-link">
     Character Creation
   </a>
-  
+
   <!-- Main hexagon element -->
   <div class="hexagon">
     Fashadow
