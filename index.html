@@ -5,20 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fashadow</title>
   <style>
-    /* Basic reset and styling */
-    body, html {
+    /* Global Reset */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
       height: 100%;
-      background-color: #222;
-      font-family: Arial, sans-serif;
+    }
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      animation: backgroundShift 12s ease infinite;
+      color: #fff;
       position: relative;
+      overflow: hidden;
     }
-
-    /* Character Creation Link styling */
+    @keyframes backgroundShift {
+      0%   { background: linear-gradient(135deg, #1a1a1a, #333); }
+      50%  { background: linear-gradient(135deg, #333, #1a1a1a); }
+      100% { background: linear-gradient(135deg, #1a1a1a, #333); }
+    }
+    /* Character Creation Link */
     .character-link {
       position: absolute;
       top: 20px;
@@ -26,14 +38,19 @@
       transform: translateX(-50%);
       font-size: 1.2rem;
       text-decoration: none;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.9);
       color: #3498db;
-      padding: 8px 16px;
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      padding: 10px 20px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: background 0.3s, transform 0.3s;
+      z-index: 3;
     }
-
-    /* Hexagon shape styling */
+    .character-link:hover {
+      background: #fff;
+      transform: translateX(-50%) scale(1.05);
+    }
+    /* Hexagon Styling */
     .hexagon {
       width: 400px;
       height: 400px;
@@ -43,22 +60,68 @@
       justify-content: center;
       align-items: center;
       color: #fff;
-      font-size: 2rem;
+      font-size: 3rem;
       font-weight: bold;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+      animation: pulse 2.5s infinite;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
+      50%  { transform: scale(1.05); box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); }
+      100% { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
+    }
+    /* Tagline Styling */
+    .tagline {
+      position: absolute;
+      bottom: 50px;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.8);
+      z-index: 3;
+    }
+    /* Fibonacci Spiral Styling */
+    .fibonacci {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: calc(50% - 150px);
+      left: calc(50% - 150px);
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 1;
+      transform: rotate(15deg);
     }
   </style>
 </head>
 <body>
-  <!-- Link to the Character Creation page -->
-  <a href="character-creation.html" class="character-link">
-    Character Creation
-  </a>
-
-  <!-- Centered hexagon with text -->
+  <!-- Refined Navigation Link -->
+  <a href="character-creation.html" class="character-link">Character Creation</a>
+  
+  <!-- Fibonacci Spiral SVG (an artistic, abstract interpretation) -->
+  <svg class="fibonacci" viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- The path below approximates a Fibonacci spiral using a series of arc commands.
+         (Note: This is an artistic interpretation rather than a mathematically perfect spiral.) -->
+    <path d="
+      M -20,0
+      A 20,20 0 0,1 0,-20
+      A 20,20 0 0,1 20,0
+      A 40,40 0 0,0 20,40
+      A 60,60 0 0,0 -40,40
+      A 100,100 0 0,1 -40,-60
+    " stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="2"/>
+  </svg>
+  
+  <!-- Centered Pulsing Hexagon -->
   <div class="hexagon">
     Fashadow
   </div>
+  
+  <!-- Profound Tagline -->
+  <div class="tagline">Where Shadows, Fate & Fibonacci Converge</div>
 </body>
 </html>
