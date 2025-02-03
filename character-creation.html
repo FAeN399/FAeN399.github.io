@@ -5,28 +5,312 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Character Creation</title>
   <style>
+    /* Basic resets */
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #f4f4f4;
+      overflow: hidden;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #222;
+      color: #fff;
     }
-
+    /* Full-screen container */
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    /* Canvas for the Tetris game (background) */
+    canvas#tetris {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* The canvas size is set by JavaScript; we center it with CSS */
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      background: #000;
+      /* Optional: add a border for visual separation */
+      border: 2px solid #555;
+    }
+    /* Foreground content overlay */
     .content {
+      position: relative;
+      z-index: 2;
       text-align: center;
+      padding: 20px;
+    }
+    /* Back-to-home link styling */
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #3498db;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="content">
-    <h1>Character Creation</h1>
-    <p>Welcome to the character creation page.</p>
-    <!-- Optionally, add a link to go back to the home page -->
-    <a href="index.html">Back to Home</a>
+  <div class="container">
+    <!-- Tetris canvas background -->
+    <canvas id="tetris"></canvas>
+
+    <!-- Foreground content -->
+    <div class="content">
+      <h1>Character Creation</h1>
+      <p>Welcome to the character creation page with Tetris in the background!</p>
+      <a href="index.html" class="back-link">Back to Home</a>
+    </div>
   </div>
+
+  <script>
+    // ----- Tetris Game Code -----
+
+    const canvas = document.getElementById('tetris');
+    const context = canvas.getContext('2d');
+
+    // Define board size and scale
+    const scale = 20;
+    const boardWidth = 12;
+    const boardHeight = 20;
+    canvas.width = boardWidth * scale;
+    canvas.height = boardHeight * scale;
+
+    // Define colors for each piece (index 0 is unused)
+    const colors = [
+      null,
+      '#FF0D72', // for T
+      '#0DC2FF', // for O
+      '#0DFF72', // for L
+      '#F538FF', // for J
+      '#FF8E0D', // for I
+      '#FFE138', // for S
+      '#3877FF', // for Z
+    ];
+
+    // Create a matrix (2D array) filled with zeros
+    function createMatrix(w, h) {
+      const matrix = [];
+      while (h--) {
+        matrix.push(new Array(w).fill(0));
+      }
+      return matrix;
+    }
+
+    // Create Tetris pieces based on type
+    function createPiece(type) {
+      if (type === 'T') {
+        return [
+          [0, 1, 0],
+          [1, 1, 1],
+          [0, 0, 0],
+        ];
+      } else if (type === 'O') {
+        return [
+          [2, 2],
+          [2, 2],
+        ];
+      } else if (type === 'L') {
+        return [
+          [0, 3, 0],
+          [0, 3, 0],
+          [0, 3, 3],
+        ];
+      } else if (type === 'J') {
+        return [
+          [0, 4, 0],
+          [0, 4, 0],
+          [4, 4, 0],
+        ];
+      } else if (type === 'I') {
+        return [
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+        ];
+      } else if (type === 'S') {
+        return [
+          [0, 6, 6],
+          [6, 6, 0],
+          [0, 0, 0],
+        ];
+      } else if (type === 'Z') {
+        return [
+          [7, 7, 0],
+          [0, 7, 7],
+          [0, 0, 0],
+        ];
+      }
+    }
+
+    // Draw a matrix (piece or board) on the canvas with a given offset
+    function drawMatrix(matrix, offset) {
+      matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            context.fillStyle = colors[value];
+            context.fillRect(x + offset.x, y + offset.y, 1, 1);
+          }
+        });
+      });
+    }
+
+    // Clear the canvas and redraw the board and active piece
+    function draw() {
+      context.fillStyle = '#000';
+      context.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
+      drawMatrix(arena, { x: 0, y: 0 });
+      drawMatrix(player.matrix, player.pos);
+    }
+
+    // Merge the current player's piece into the arena (board)
+    function merge(arena, player) {
+      player.matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            arena[y + player.pos.y][x + player.pos.x] = value;
+          }
+        });
+      });
+    }
+
+    // Check for collision of the player's piece with the arena
+    function collide(arena, player) {
+      const m = player.matrix;
+      const o = player.pos;
+      for (let y = 0; y < m.length; y++) {
+        for (let x = 0; x < m[y].length; x++) {
+          if (
+            m[y][x] !== 0 &&
+            (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Sweep full rows in the arena and clear them
+    function arenaSweep() {
+      outer: for (let y = arena.length - 1; y >= 0; y--) {
+        for (let x = 0; x < arena[y].length; x++) {
+          if (arena[y][x] === 0) {
+            continue outer;
+          }
+        }
+        const row = arena.splice(y, 1)[0].fill(0);
+        arena.unshift(row);
+        y++;
+      }
+    }
+
+    // Rotate a matrix (the piece) in the given direction
+    function rotate(matrix, dir) {
+      for (let y = 0; y < matrix.length; y++) {
+        for (let x = 0; x < y; x++) {
+          [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+        }
+      }
+      if (dir > 0) {
+        matrix.forEach(row => row.reverse());
+      } else {
+        matrix.reverse();
+      }
+    }
+
+    // Drop the player's piece by one row
+    function playerDrop() {
+      player.pos.y++;
+      if (collide(arena, player)) {
+        player.pos.y--;
+        merge(arena, player);
+        playerReset();
+        arenaSweep();
+      }
+      dropCounter = 0;
+    }
+
+    // Move the player's piece left or right
+    function playerMove(dir) {
+      player.pos.x += dir;
+      if (collide(arena, player)) {
+        player.pos.x -= dir;
+      }
+    }
+
+    // Reset the player with a new random piece
+    function playerReset() {
+      const pieces = 'ILJOTSZ';
+      player.matrix = createPiece(pieces[Math.floor(pieces.length * Math.random())]);
+      player.pos.y = 0;
+      player.pos.x = Math.floor(arena[0].length / 2) - Math.floor(player.matrix[0].length / 2);
+      if (collide(arena, player)) {
+        arena.forEach(row => row.fill(0));
+      }
+    }
+
+    // Rotate the player's piece, adjusting its position if needed
+    function playerRotate(dir) {
+      const pos = player.pos.x;
+      let offset = 1;
+      rotate(player.matrix, dir);
+      while (collide(arena, player)) {
+        player.pos.x += offset;
+        offset = -(offset + (offset > 0 ? 1 : -1));
+        if (offset > player.matrix[0].length) {
+          rotate(player.matrix, -dir);
+          player.pos.x = pos;
+          return;
+        }
+      }
+    }
+
+    let dropCounter = 0;
+    let dropInterval = 1000; // milliseconds between automatic drops
+
+    let lastTime = 0;
+    function update(time = 0) {
+      const deltaTime = time - lastTime;
+      lastTime = time;
+
+      dropCounter += deltaTime;
+      if (dropCounter > dropInterval) {
+        playerDrop();
+      }
+
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    // Create the arena (the game board) and player object
+    const arena = createMatrix(boardWidth, boardHeight);
+    const player = {
+      pos: { x: 0, y: 0 },
+      matrix: null,
+    };
+
+    // Listen for key presses to control the piece
+    document.addEventListener('keydown', event => {
+      if (event.keyCode === 37) {          // Left arrow
+        playerMove(-1);
+      } else if (event.keyCode === 39) {   // Right arrow
+        playerMove(1);
+      } else if (event.keyCode === 40) {   // Down arrow
+        playerDrop();
+      } else if (event.keyCode === 81) {   // Q key rotates counter-clockwise
+        playerRotate(-1);
+      } else if (event.keyCode === 87) {   // W key rotates clockwise
+        playerRotate(1);
+      }
+    });
+
+    // Start the game
+    playerReset();
+    update();
+  </script>
 </body>
 </html>
