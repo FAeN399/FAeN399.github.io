@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Major City Map with New Building Option</title>
+  <style>
+    body {
+      background: #e0e0e0;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    svg {
+      background: #fffbe0;
+      border: 1px solid #ccc;
+      display: block;
+      margin: 20px auto;
+    }
+    text {
+      font-family: Arial, sans-serif;
+      fill: #333;
+      pointer-events: none;
+    }
+    /* Style for both control panels */
+    #control-panel, #create-panel {
+      width: 800px;
+      margin: 0 auto 20px auto;
+      padding: 10px;
+      background: #f2f2f2;
+      border: 1px solid #ccc;
+    }
+    #control-panel label, #create-panel label {
+      display: inline-block;
+      width: 120px;
+      margin-right: 10px;
+    }
+    #control-panel input, #control-panel select,
+    #create-panel input, #create-panel select {
+      margin-bottom: 10px;
+    }
+    #control-panel div, #create-panel div {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Major City Map</h1>
+  
+  <!-- Update Panel: Move, Rename, and Resize Existing Buildings -->
+  <div id="control-panel">
+    <h2>Update Existing Building</h2>
+    <div>
+      <label for="building-select">Select Building:</label>
+      <select id="building-select">
+        <option value="city-walls">City Walls</option>
+        <option value="castle">Castle</option>
+        <option value="market">Market District</option>
+        <option value="residential">Residential</option>
+        <option value="temple">Temple</option>
+        <option value="guilds">Guilds</option>
+        <option value="slums">Slums</option>
+      </select>
+    </div>
+    <div>
+      <label for="new-name">New Name:</label>
+      <input type="text" id="new-name" placeholder="Enter new name">
+    </div>
+    <div>
+      <label for="new-x">New X Position:</label>
+      <input type="number" id="new-x" placeholder="New X">
+    </div>
+    <div>
+      <label for="new-y">New Y Position:</label>
+      <input type="number" id="new-y" placeholder="New Y">
+    </div>
+    <div>
+      <label for="new-width">New Width:</label>
+      <input type="number" id="new-width" placeholder="New Width">
+    </div>
+    <div>
+      <label for="new-height">New Height:</label>
+      <input type="number" id="new-height" placeholder="New Height">
+    </div>
+    <button type="button" onclick="updateBuilding()">Update Building</button>
+  </div>
+  
+  <!-- Create Panel: Add a New Building -->
+  <div id="create-panel">
+    <h2>Create New Building</h2>
+    <div>
+      <label for="create-name">Building Name:</label>
+      <input type="text" id="create-name" placeholder="Name">
+    </div>
+    <div>
+      <label for="create-x">X Position:</label>
+      <input type="number" id="create-x" placeholder="X">
+    </div>
+    <div>
+      <label for="create-y">Y Position:</label>
+      <input type="number" id="create-y" placeholder="Y">
+    </div>
+    <div>
+      <label for="create-width">Width:</label>
+      <input type="number" id="create-width" placeholder="Width">
+    </div>
+    <div>
+      <label for="create-height">Height:</label>
+      <input type="number" id="create-height" placeholder="Height">
+    </div>
+    <div>
+      <label for="create-fill">Fill Color:</label>
+      <input type="text" id="create-fill" placeholder="#d4e6f1">
+    </div>
+    <div>
+      <label for="create-stroke">Stroke Color:</label>
+      <input type="text" id="create-stroke" placeholder="#2e86c1">
+    </div>
+    <button type="button" onclick="createBuilding()">Create Building</button>
+  </div>
+  
+  <!-- SVG Map of the City -->
+  <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Outer City Walls -->
+    <rect id="city-walls" x="50" y="50" width="700" height="500" fill="none" stroke="black" stroke-width="4" />
+    <text id="city-walls-label" x="400" y="45" text-anchor="middle" font-size="16" font-weight="bold">City Walls</text>
+    
+    <!-- City Gates -->
+    <circle cx="400" cy="50" r="6" fill="#000" />
+    <text x="400" y="30" text-anchor="middle" font-size="12">North Gate</text>
+    
+    <circle cx="400" cy="550" r="6" fill="#000" />
+    <text x="400" y="570" text-anchor="middle" font-size="12">South Gate</text>
+    
+    <circle cx="750" cy="300" r="6" fill="#000" />
+    <text x="770" y="300" text-anchor="start" font-size="12">East Gate</text>
+    
+    <circle cx="50" cy="300" r="6" fill="#000" />
+    <text x="30" y="300" text-anchor="end" font-size="12">West Gate</text>
+    
+    <!-- Pre-Defined Districts -->
+    <rect id="castle" x="80" y="80" width="180" height="140" fill="#d4e6f1" stroke="#2e86c1" stroke-width="2" />
+    <text id="castle-label" x="170" y="155" text-anchor="middle" font-size="16" font-weight="bold">Castle</text>
+    
+    <rect id="market" x="300" y="200" width="250" height="200" fill="#f9e79f" stroke="#f1c40f" stroke-width="2" />
+    <text id="market-label" x="425" y="300" text-anchor="middle" font-size="16" font-weight="bold">Market District</text>
+    
+    <rect id="residential" x="80" y="240" width="180" height="200" fill="#d5f5e3" stroke="#27ae60" stroke-width="2" />
+    <text id="residential-label" x="170" y="340" text-anchor="middle" font-size="16" font-weight="bold">Residential</text>
+    
+    <rect id="temple" x="600" y="80" width="150" height="120" fill="#fadbd8" stroke="#e74c3c" stroke-width="2" />
+    <text id="temple-label" x="675" y="150" text-anchor="middle" font-size="16" font-weight="bold">Temple</text>
+    
+    <rect id="guilds" x="80" y="460" width="180" height="80" fill="#e8daef" stroke="#8e44ad" stroke-width="2" />
+    <text id="guilds-label" x="170" y="500" text-anchor="middle" font-size="16" font-weight="bold">Guilds</text>
+    
+    <rect id="slums" x="600" y="350" width="150" height="100" fill="#f5cba7" stroke="#d35400" stroke-width="2" />
+    <text id="slums-label" x="675" y="405" text-anchor="middle" font-size="16" font-weight="bold">Slums</text>
+    
+    <!-- Roads Connecting Districts (static for now) -->
+    <line x1="170" y1="220" x2="425" y2="200" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+    <line x1="260" y1="150" x2="600" y2="140" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+    <line x1="170" y1="340" x2="170" y2="500" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+    <line x1="425" y1="400" x2="675" y2="400" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+  </svg>
+  
+  <!-- JavaScript for Updating and Creating Buildings -->
+  <script>
+    // Global counter for new buildings so that each has a unique id
+    var newBuildingCounter = 1;
+    
+    // Function to update an existing building's name, position, and size
+    function updateBuilding() {
+      var buildingId = document.getElementById('building-select').value;
+      var newName = document.getElementById('new-name').value.trim();
+      var newX = document.getElementById('new-x').value;
+      var newY = document.getElementById('new-y').value;
+      var newWidth = document.getElementById('new-width').value;
+      var newHeight = document.getElementById('new-height').value;
+      
+      var building = document.getElementById(buildingId);
+      var label = document.getElementById(buildingId + '-label');
+      
+      // Update the name if provided
+      if(newName !== "") {
+        label.textContent = newName;
+        // Also update the corresponding option text in the dropdown list
+        var select = document.getElementById('building-select');
+        for (var i = 0; i < select.options.length; i++) {
+          if(select.options[i].value === buildingId) {
+            select.options[i].text = newName;
+            break;
+          }
+        }
+      }
+      
+      // Get the current attributes or use new values if provided
+      var currX = parseFloat(building.getAttribute('x'));
+      var currY = parseFloat(building.getAttribute('y'));
+      var currWidth = parseFloat(building.getAttribute('width'));
+      var currHeight = parseFloat(building.getAttribute('height'));
+      
+      var updatedX = (newX !== "") ? parseFloat(newX) : currX;
+      var updatedY = (newY !== "") ? parseFloat(newY) : currY;
+      var updatedWidth = (newWidth !== "") ? parseFloat(newWidth) : currWidth;
+      var updatedHeight = (newHeight !== "") ? parseFloat(newHeight) : currHeight;
+      
+      // Update the building rectangle attributes
+      building.setAttribute('x', updatedX);
+      building.setAttribute('y', updatedY);
+      building.setAttribute('width', updatedWidth);
+      building.setAttribute('height', updatedHeight);
+      
+      // Update the label position (centered for most elements, or above for the city walls)
+      if(buildingId === "city-walls") {
+        label.setAttribute('x', updatedX + updatedWidth / 2);
+        label.setAttribute('y', updatedY - 5);
+      } else {
+        label.setAttribute('x', updatedX + updatedWidth / 2);
+        label.setAttribute('y', updatedY + updatedHeight / 2);
+      }
+    }
+    
+    // Function to create a new building element on the SVG map
+    function createBuilding() {
+      var name = document.getElementById('create-name').value.trim();
+      var x = document.getElementById('create-x').value;
+      var y = document.getElementById('create-y').value;
+      var width = document.getElementById('create-width').value;
+      var height = document.getElementById('create-height').value;
+      var fill = document.getElementById('create-fill').value.trim();
+      var stroke = document.getElementById('create-stroke').value.trim();
+      
+      // Basic validation: name, position, and dimensions are required
+      if(name === "" || x === "" || y === "" || width === "" || height === "") {
+        alert("Please fill out all required fields (Name, X, Y, Width, Height).");
+        return;
+      }
+      
+      // Convert numeric values from strings
+      x = parseFloat(x);
+      y = parseFloat(y);
+      width = parseFloat(width);
+      height = parseFloat(height);
+      fill = (fill === "") ? "#ccc" : fill;
+      stroke = (stroke === "") ? "#000" : stroke;
+      
+      // Generate a unique id for the new building
+      var newId = "new-building-" + newBuildingCounter;
+      newBuildingCounter++;
+      
+      // Create the new rectangle for the building
+      var svgNS = "http://www.w3.org/2000/svg";
+      var newRect = document.createElementNS(svgNS, "rect");
+      newRect.setAttribute("id", newId);
+      newRect.setAttribute("x", x);
+      newRect.setAttribute("y", y);
+      newRect.setAttribute("width", width);
+      newRect.setAttribute("height", height);
+      newRect.setAttribute("fill", fill);
+      newRect.setAttribute("stroke", stroke);
+      newRect.setAttribute("stroke-width", "2");
+      
+      // Create the label for the new building (centered)
+      var newLabel = document.createElementNS(svgNS, "text");
+      newLabel.setAttribute("id", newId + "-label");
+      newLabel.setAttribute("x", x + width / 2);
+      newLabel.setAttribute("y", y + height / 2);
+      newLabel.setAttribute("text-anchor", "middle");
+      newLabel.setAttribute("font-size", "16");
+      newLabel.setAttribute("font-weight", "bold");
+      newLabel.textContent = name;
+      
+      // Append the new elements to the SVG map
+      var svg = document.querySelector("svg");
+      svg.appendChild(newRect);
+      svg.appendChild(newLabel);
+      
+      // Add the new building to the update dropdown
+      var select = document.getElementById('building-select');
+      var newOption = document.createElement("option");
+      newOption.value = newId;
+      newOption.text = name;
+      select.appendChild(newOption);
+      
+      // Clear the create building form fields
+      document.getElementById('create-name').value = "";
+      document.getElementById('create-x').value = "";
+      document.getElementById('create-y').value = "";
+      document.getElementById('create-width').value = "";
+      document.getElementById('create-height').value = "";
+      document.getElementById('create-fill').value = "";
+      document.getElementById('create-stroke').value = "";
+    }
+  </script>
+</body>
+</html>
