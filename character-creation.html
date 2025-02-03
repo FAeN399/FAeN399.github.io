@@ -21,6 +21,31 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
+    }
+    
+    /* Navigation links (Back to Home and City Builder) */
+    .navigation {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10; /* ensure links appear above the canvas */
+    }
+    .navigation a {
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .back-link {
+      background: #3498db;
+    }
+    .city-builder-link {
+      background: #e67e22;
     }
     
     /* Tetris canvas styling */
@@ -56,6 +81,12 @@
   </style>
 </head>
 <body>
+  <!-- Navigation Links -->
+  <div class="navigation">
+    <a href="index.html" class="back-link">Back to Home</a>
+    <a href="city-builder.html" class="city-builder-link">City Builder</a>
+  </div>
+  
   <!-- Tetris Canvas -->
   <canvas id="tetris"></canvas>
   
@@ -85,7 +116,7 @@
     // Colors for Tetris pieces (index corresponds to piece value)
     const colors = [
       null,
-      '#FF0D72', // 1: T piece (example)
+      '#FF0D72', // 1: T piece
       '#0DC2FF', // 2: O piece
       '#0DFF72', // 3: L piece
       '#F538FF', // 4: J piece
@@ -179,7 +210,7 @@
       for (let y = 0; y < player.matrix.length; y++) {
         for (let x = 0; x < player.matrix[y].length; x++) {
           if (player.matrix[y][x] !== 0) {
-            // Check if the position is out-of-bounds or already occupied in the arena
+            // Check if the position is out-of-bounds or already occupied
             if (
               !arena[y + player.pos.y] ||
               arena[y + player.pos.y][x + player.pos.x] !== 0
@@ -259,7 +290,7 @@
       player.pos.y = 0;
       player.pos.x = Math.floor((arena[0].length - player.matrix[0].length) / 2);
       if (collide(arena, player)) {
-        // If a collision occurs immediately, reset the arena (game over scenario)
+        // Reset the arena if collision occurs immediately (game over scenario)
         arena = createMatrix(boardWidth, boardHeight);
       }
     }
