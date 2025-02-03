@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fashadow</title>
   <style>
     /* Global Reset */
@@ -15,14 +15,15 @@
       height: 100%;
     }
     body {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: Arial, sans-serif;
+      /* Animated dark gradient background */
       background: linear-gradient(135deg, #1a1a1a, #333);
       animation: backgroundShift 12s ease infinite;
       color: #fff;
-      position: relative;
       overflow: hidden;
     }
     @keyframes backgroundShift {
@@ -30,7 +31,8 @@
       50%  { background: linear-gradient(135deg, #333, #1a1a1a); }
       100% { background: linear-gradient(135deg, #1a1a1a, #333); }
     }
-    /* Character Creation Link */
+
+    /* Navigation Link */
     .character-link {
       position: absolute;
       top: 20px;
@@ -44,13 +46,14 @@
       border-radius: 30px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       transition: background 0.3s, transform 0.3s;
-      z-index: 3;
+      z-index: 4;
     }
     .character-link:hover {
       background: #fff;
       transform: translateX(-50%) scale(1.05);
     }
-    /* Hexagon Styling */
+
+    /* Pulsing Hexagon */
     .hexagon {
       width: 400px;
       height: 400px;
@@ -66,14 +69,15 @@
       box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
       animation: pulse 2.5s infinite;
       position: relative;
-      z-index: 2;
+      z-index: 5;
     }
     @keyframes pulse {
       0%   { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
       50%  { transform: scale(1.05); box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); }
       100% { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
     }
-    /* Tagline Styling */
+
+    /* Tagline */
     .tagline {
       position: absolute;
       bottom: 50px;
@@ -82,9 +86,10 @@
       font-size: 1.5rem;
       letter-spacing: 2px;
       color: rgba(255, 255, 255, 0.8);
-      z-index: 3;
+      z-index: 6;
     }
-    /* Fibonacci Spiral Styling */
+
+    /* Fibonacci Spiral (artistic interpretation) */
     .fibonacci {
       position: absolute;
       width: 300px;
@@ -93,19 +98,70 @@
       left: calc(50% - 150px);
       opacity: 0.6;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
       transform: rotate(15deg);
     }
+
+    /* Sacred Geometry Overlay (Flower of Life-like pattern) */
+    .sacred-geometry {
+      position: absolute;
+      width: 800px;
+      height: 600px;
+      top: 0;
+      left: 0;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* Style for the Flower of Life pattern using overlapping circles */
+    .sacred-geometry circle {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 2;
+    }
+
+    /* Alchemical Symbols Overlay */
+    .alchemical-symbols {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .alchemical-symbol {
+      position: absolute;
+      font-size: 2rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    /* Position individual alchemical symbols */
+    .alchemical-symbol.symbol-mercury   { top: 10%; left: 10%; }
+    .alchemical-symbol.symbol-sun       { top: 10%; right: 10%; }
+    .alchemical-symbol.symbol-moon      { bottom: 10%; left: 10%; }
+    .alchemical-symbol.symbol-sulfur    { bottom: 10%; right: 10%; }
+    .alchemical-symbol.symbol-salt      { top: 50%; left: 5%; }
   </style>
 </head>
 <body>
-  <!-- Refined Navigation Link -->
+  <!-- Navigation Link -->
   <a href="character-creation.html" class="character-link">Character Creation</a>
-  
-  <!-- Fibonacci Spiral SVG (an artistic, abstract interpretation) -->
+
+  <!-- Sacred Geometry Overlay: Flower of Life-like pattern -->
+  <svg class="sacred-geometry" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Center circle -->
+    <circle cx="400" cy="300" r="100" />
+    <!-- 6 circles arranged around the center -->
+    <circle cx="400" cy="200" r="100" />
+    <circle cx="500" cy="250" r="100" />
+    <circle cx="500" cy="350" r="100" />
+    <circle cx="400" cy="400" r="100" />
+    <circle cx="300" cy="350" r="100" />
+    <circle cx="300" cy="250" r="100" />
+  </svg>
+
+  <!-- Fibonacci Spiral Overlay -->
   <svg class="fibonacci" viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg">
-    <!-- The path below approximates a Fibonacci spiral using a series of arc commands.
-         (Note: This is an artistic interpretation rather than a mathematically perfect spiral.) -->
     <path d="
       M -20,0
       A 20,20 0 0,1 0,-20
@@ -115,13 +171,20 @@
       A 100,100 0 0,1 -40,-60
     " stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="2"/>
   </svg>
-  
-  <!-- Centered Pulsing Hexagon -->
-  <div class="hexagon">
-    Fashadow
+
+  <!-- Alchemical Symbols Overlay -->
+  <div class="alchemical-symbols">
+    <span class="alchemical-symbol symbol-mercury">☿</span>
+    <span class="alchemical-symbol symbol-sun">☉</span>
+    <span class="alchemical-symbol symbol-moon">☾</span>
+    <span class="alchemical-symbol symbol-sulfur">▲</span>
+    <span class="alchemical-symbol symbol-salt">■</span>
   </div>
-  
-  <!-- Profound Tagline -->
-  <div class="tagline">Where Shadows, Fate & Fibonacci Converge</div>
+
+  <!-- Centered Pulsing Hexagon -->
+  <div class="hexagon">Fashadow</div>
+
+  <!-- Tagline -->
+  <div class="tagline">Where Shadows, Fate, Fibonacci, Alchemy & Sacred Geometry Converge</div>
 </body>
 </html>
