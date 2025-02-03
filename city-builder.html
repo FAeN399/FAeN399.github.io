@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Major City Map with New Building Option</title>
+  <title>Major City Map with Resizing Options</title>
   <style>
+    /* Base Styles */
     body {
       background: #e0e0e0;
       font-family: Arial, sans-serif;
@@ -12,6 +13,7 @@
     }
     h1 {
       text-align: center;
+      margin-bottom: 20px;
     }
     svg {
       background: #fffbe0;
@@ -24,37 +26,88 @@
       fill: #333;
       pointer-events: none;
     }
-    /* Style for both control panels */
-    #control-panel, #create-panel {
+    
+    /* Panel Styling */
+    .panel {
       width: 800px;
       margin: 0 auto 20px auto;
-      padding: 10px;
+      padding: 15px;
       background: #f2f2f2;
       border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    #control-panel label, #create-panel label {
-      display: inline-block;
-      width: 120px;
-      margin-right: 10px;
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2em;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
     }
-    #control-panel input, #control-panel select,
-    #create-panel input, #create-panel select {
+    .form-group {
+      display: flex;
+      align-items: center;
       margin-bottom: 10px;
     }
-    #control-panel div, #create-panel div {
-      margin-bottom: 8px;
+    .form-group label {
+      width: 150px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .form-group input,
+    .form-group select {
+      flex: 1;
+      padding: 5px;
+      font-size: 1em;
+    }
+    .panel button {
+      display: block;
+      margin: 15px auto 0 auto;
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .panel button:hover {
+      background: #2980b9;
     }
   </style>
 </head>
 <body>
   <h1>Major City Map</h1>
   
-  <!-- Update Panel: Move, Rename, and Resize Existing Buildings -->
-  <div id="control-panel">
+  <!-- City Settings Panel: Resize/Move the Outer City Walls -->
+  <div class="panel" id="city-settings-panel">
+    <h2>City Settings</h2>
+    <div class="form-group">
+      <label for="city-x">City X Position:</label>
+      <input type="number" id="city-x" placeholder="City X" value="50">
+    </div>
+    <div class="form-group">
+      <label for="city-y">City Y Position:</label>
+      <input type="number" id="city-y" placeholder="City Y" value="50">
+    </div>
+    <div class="form-group">
+      <label for="city-width">City Width:</label>
+      <input type="number" id="city-width" placeholder="City Width" value="700">
+    </div>
+    <div class="form-group">
+      <label for="city-height">City Height:</label>
+      <input type="number" id="city-height" placeholder="City Height" value="500">
+    </div>
+    <button type="button" onclick="updateCity()">Update City</button>
+  </div>
+  
+  <!-- Update Existing Building Panel -->
+  <div class="panel" id="update-panel">
     <h2>Update Existing Building</h2>
-    <div>
+    <div class="form-group">
       <label for="building-select">Select Building:</label>
       <select id="building-select">
+        <!-- Note: City Walls is included so that resizing/moving them is also possible -->
         <option value="city-walls">City Walls</option>
         <option value="castle">Castle</option>
         <option value="market">Market District</option>
@@ -64,57 +117,57 @@
         <option value="slums">Slums</option>
       </select>
     </div>
-    <div>
+    <div class="form-group">
       <label for="new-name">New Name:</label>
       <input type="text" id="new-name" placeholder="Enter new name">
     </div>
-    <div>
+    <div class="form-group">
       <label for="new-x">New X Position:</label>
       <input type="number" id="new-x" placeholder="New X">
     </div>
-    <div>
+    <div class="form-group">
       <label for="new-y">New Y Position:</label>
       <input type="number" id="new-y" placeholder="New Y">
     </div>
-    <div>
+    <div class="form-group">
       <label for="new-width">New Width:</label>
       <input type="number" id="new-width" placeholder="New Width">
     </div>
-    <div>
+    <div class="form-group">
       <label for="new-height">New Height:</label>
       <input type="number" id="new-height" placeholder="New Height">
     </div>
     <button type="button" onclick="updateBuilding()">Update Building</button>
   </div>
   
-  <!-- Create Panel: Add a New Building -->
-  <div id="create-panel">
+  <!-- Create New Building Panel -->
+  <div class="panel" id="create-panel">
     <h2>Create New Building</h2>
-    <div>
+    <div class="form-group">
       <label for="create-name">Building Name:</label>
       <input type="text" id="create-name" placeholder="Name">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-x">X Position:</label>
       <input type="number" id="create-x" placeholder="X">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-y">Y Position:</label>
       <input type="number" id="create-y" placeholder="Y">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-width">Width:</label>
       <input type="number" id="create-width" placeholder="Width">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-height">Height:</label>
       <input type="number" id="create-height" placeholder="Height">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-fill">Fill Color:</label>
       <input type="text" id="create-fill" placeholder="#d4e6f1">
     </div>
-    <div>
+    <div class="form-group">
       <label for="create-stroke">Stroke Color:</label>
       <input type="text" id="create-stroke" placeholder="#2e86c1">
     </div>
@@ -122,7 +175,7 @@
   </div>
   
   <!-- SVG Map of the City -->
-  <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <svg id="city-map" width="800" height="600" xmlns="http://www.w3.org/2000/svg">
     <!-- Outer City Walls -->
     <rect id="city-walls" x="50" y="50" width="700" height="500" fill="none" stroke="black" stroke-width="4" />
     <text id="city-walls-label" x="400" y="45" text-anchor="middle" font-size="16" font-weight="bold">City Walls</text>
@@ -166,12 +219,38 @@
     <line x1="425" y1="400" x2="675" y2="400" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
   </svg>
   
-  <!-- JavaScript for Updating and Creating Buildings -->
+  <!-- JavaScript for Updating and Creating Buildings & City Resizing -->
   <script>
     // Global counter for new buildings so that each has a unique id
     var newBuildingCounter = 1;
     
-    // Function to update an existing building's name, position, and size
+    // Update the City (outer walls) dimensions and position
+    function updateCity() {
+      var cityX = document.getElementById('city-x').value;
+      var cityY = document.getElementById('city-y').value;
+      var cityWidth = document.getElementById('city-width').value;
+      var cityHeight = document.getElementById('city-height').value;
+      
+      var cityWalls = document.getElementById('city-walls');
+      var cityLabel = document.getElementById('city-walls-label');
+      
+      // Use provided values (or fallback to current attributes)
+      var updatedX = cityX !== "" ? parseFloat(cityX) : parseFloat(cityWalls.getAttribute('x'));
+      var updatedY = cityY !== "" ? parseFloat(cityY) : parseFloat(cityWalls.getAttribute('y'));
+      var updatedWidth = cityWidth !== "" ? parseFloat(cityWidth) : parseFloat(cityWalls.getAttribute('width'));
+      var updatedHeight = cityHeight !== "" ? parseFloat(cityHeight) : parseFloat(cityWalls.getAttribute('height'));
+      
+      cityWalls.setAttribute('x', updatedX);
+      cityWalls.setAttribute('y', updatedY);
+      cityWalls.setAttribute('width', updatedWidth);
+      cityWalls.setAttribute('height', updatedHeight);
+      
+      // Center the city label above the walls
+      cityLabel.setAttribute('x', updatedX + updatedWidth / 2);
+      cityLabel.setAttribute('y', updatedY - 5);
+    }
+    
+    // Update an existing building's properties (name, position, size)
     function updateBuilding() {
       var buildingId = document.getElementById('building-select').value;
       var newName = document.getElementById('new-name').value.trim();
@@ -186,7 +265,7 @@
       // Update the name if provided
       if(newName !== "") {
         label.textContent = newName;
-        // Also update the corresponding option text in the dropdown list
+        // Also update the corresponding option text in the dropdown
         var select = document.getElementById('building-select');
         for (var i = 0; i < select.options.length; i++) {
           if(select.options[i].value === buildingId) {
@@ -196,7 +275,7 @@
         }
       }
       
-      // Get the current attributes or use new values if provided
+      // Get current attributes or new values if provided
       var currX = parseFloat(building.getAttribute('x'));
       var currY = parseFloat(building.getAttribute('y'));
       var currWidth = parseFloat(building.getAttribute('width'));
@@ -207,13 +286,13 @@
       var updatedWidth = (newWidth !== "") ? parseFloat(newWidth) : currWidth;
       var updatedHeight = (newHeight !== "") ? parseFloat(newHeight) : currHeight;
       
-      // Update the building rectangle attributes
+      // Update the building's attributes
       building.setAttribute('x', updatedX);
       building.setAttribute('y', updatedY);
       building.setAttribute('width', updatedWidth);
       building.setAttribute('height', updatedHeight);
       
-      // Update the label position (centered for most elements, or above for the city walls)
+      // Update the label's position (centered; if city walls, position above)
       if(buildingId === "city-walls") {
         label.setAttribute('x', updatedX + updatedWidth / 2);
         label.setAttribute('y', updatedY - 5);
@@ -223,7 +302,7 @@
       }
     }
     
-    // Function to create a new building element on the SVG map
+    // Create a new building element on the SVG map
     function createBuilding() {
       var name = document.getElementById('create-name').value.trim();
       var x = document.getElementById('create-x').value;
@@ -233,13 +312,13 @@
       var fill = document.getElementById('create-fill').value.trim();
       var stroke = document.getElementById('create-stroke').value.trim();
       
-      // Basic validation: name, position, and dimensions are required
+      // Basic validation
       if(name === "" || x === "" || y === "" || width === "" || height === "") {
         alert("Please fill out all required fields (Name, X, Y, Width, Height).");
         return;
       }
       
-      // Convert numeric values from strings
+      // Convert numeric values
       x = parseFloat(x);
       y = parseFloat(y);
       width = parseFloat(width);
@@ -251,7 +330,7 @@
       var newId = "new-building-" + newBuildingCounter;
       newBuildingCounter++;
       
-      // Create the new rectangle for the building
+      // Create the new rectangle element
       var svgNS = "http://www.w3.org/2000/svg";
       var newRect = document.createElementNS(svgNS, "rect");
       newRect.setAttribute("id", newId);
@@ -263,7 +342,7 @@
       newRect.setAttribute("stroke", stroke);
       newRect.setAttribute("stroke-width", "2");
       
-      // Create the label for the new building (centered)
+      // Create the label element (centered)
       var newLabel = document.createElementNS(svgNS, "text");
       newLabel.setAttribute("id", newId + "-label");
       newLabel.setAttribute("x", x + width / 2);
@@ -273,8 +352,8 @@
       newLabel.setAttribute("font-weight", "bold");
       newLabel.textContent = name;
       
-      // Append the new elements to the SVG map
-      var svg = document.querySelector("svg");
+      // Append the new elements to the SVG
+      var svg = document.getElementById('city-map');
       svg.appendChild(newRect);
       svg.appendChild(newLabel);
       
@@ -285,7 +364,7 @@
       newOption.text = name;
       select.appendChild(newOption);
       
-      // Clear the create building form fields
+      // Clear the form fields
       document.getElementById('create-name').value = "";
       document.getElementById('create-x').value = "";
       document.getElementById('create-y').value = "";
