@@ -3,59 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fashadow</title>
+  <title>Character Creation</title>
   <style>
+    /* Basic resets */
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: #222;
+      overflow: hidden;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .download-link {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.2rem;
-      text-decoration: none;
-      background: #fff;
-      color: #3498db;
-      padding: 8px 16px;
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .hexagon {
-      width: 400px;
-      height: 400px;
-      background: #e74c3c;
-      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #222;
       color: #fff;
-      font-size: 2rem;
-      font-weight: bold;
+    }
+    /* Full-page container */
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    /* Tetris canvas (background) */
+    canvas#tetris {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      background: #000;
+      border: 2px solid #555;
+    }
+    /* Foreground content overlay */
+    .content {
+      position: relative;
+      z-index: 2;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+    }
+    /* Link styling */
+    .back-link, .city-builder-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .back-link {
+      background: #3498db;
+    }
+    .city-builder-link {
+      background: #e67e22;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
-  <!-- Link to another page on your site -->
-  <a href="character-creation.html" class="download-link">
-    Character Creation
-  </a>
+  <div class="container">
+    <!-- Tetris canvas background -->
+    <canvas id="tetris"></canvas>
 
-  <!-- Main hexagon element -->
-  <div class="hexagon">
-    Fashadow
+    <!-- Foreground content -->
+    <div class="content">
+      <h1>Character Creation</h1>
+      <p>Welcome to the character creation page with Tetris in the background!</p>
+      <!-- Link back to Home -->
+      <a href="index.html" class="back-link">Back to Home</a>
+      <!-- New link to the City Builder page -->
+      <a href="city-builder.html" class="city-builder-link">City Builder</a>
+    </div>
   </div>
+
+  <script>
+    // ----- Tetris Game Code -----
+    
+    const canvas = document.getElementById('tetris');
+    const context = canvas.getContext('2d');
+    
+    // Define board size and scale factor
+    const scale = 20;
+    const boardWidth = 12;
+    const boardHeight = 20;
+    canvas.width = boardWidth * scale;
+    canvas.height = boardHeight * scale;
+
+    // Colors for each Tetris piece
+    const colors = [
+      null,
+      '#FF0D72', // T
+      '#0DC2FF', // O
+      '#0DFF72', // L
+      '#F538FF', // J
+      '#FF8E0D', // I
+      '#FFE138', // S
+      '#3877FF'  // Z
+    ];
+
+    // Create game board
+    function createMatrix(w, h) {
+      const matrix = [];
+      while (h--) {
+        matrix.push(new Array(w).fill(0));
+      }
+      return matrix;
+    }
+
+    // Create Tetris pieces
+    function createPiece(type) {
+      if (type === 'T') {
+        return [
+          [0, 1, 0],
+          [1, 1, 1],
+          [0, 0, 0],
+        ];
+      } else if (type === 'O') {
+        return [
+          [2, 2],
+          [2, 2],
+        ];
+      } else if (type === 'L') {
+        return [
+          [0, 3, 0],
+          [0, 3, 0],
+          [0, 3, 3],
+        ];
+      } else if (type === 'J') {
+        return [
+          [0, 4, 0],
+          [0, 4, 0],
+          [4, 4, 0],
+        ];
+      } else if (type === 'I') {
+        return [
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+          [0, 5, 0, 0],
+        ];
+      } else if (type === 'S') {
+        return [
+          [0, 6, 6],
+          [6, 6, 0],
+          [0, 0, 0],
+        ];
+      } else if (type === 'Z') {
+        return [
+          [7, 7, 0],
+          [0, 7, 7],
+          [0, 0, 0],
+        ];
+      }
+    }
+
+    // Draw a piece or board
+    function drawMatrix(matrix, offset) {
+      matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            context.fillStyle = colors[value];
+            context.fillRect(x + offset.x, y + offset.y, 1, 1);
+          }
+        });
+      });
+    }
+
+    // Clear canvas and redraw everything
+    function draw() {
+      context.setTransform(scale, 0, 0, scale, 0, 0);
+      context.fillStyle = '#000';
+      context.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
+      drawMatrix(arena, { x: 0, y: 0 });
+      drawMatrix(player.matrix, player.pos);
+    }
+
+    // Merge player's piece into the arena
+    function merge(arena, player) {
+      player.matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            arena[y + player.pos.y][x + player.pos.x] = value;
+          }
+        });
+      });
+    }
+
+    // Check for collisions
+    function collide(arena, player) {
+      for (let y = 0; y < player.matrix.length; y++) {
+        for (let x = 0; x < player.matrix[y].length; x++) {
+          if (
+            player.matrix[y][x] !== 0 &&
+            (arena[y + player.pos.y] &&
+             arena[y + player.pos.y][x + player.pos.x]) !== 0
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Remove completed rows
+    function arenaSweep() {
+      outer: for (let y = arena.length - 1; y >= 0; y--) {
+        for (let x = 0; x < arena[y].length; x++) {
+          if (arena[y][x] === 0) {
+            continue outer;
+          }
+        }
+        const row = arena.splice(y, 1)[0].fill(0);
+        arena.unshift(row);
+      }
+    }
+
+    // Drop the piece down
+    function playerDrop() {
+      player.pos.y++;
+      if (collide(arena, player)) {
+        player.pos.y--;
+        merge(arena, player);
+        playerReset();
+        arenaSweep();
+      }
+      dropCounter = 0;
+    }
+
+    // Move player left/right
+    function playerMove(dir) {
+      player.pos.x += dir;
+      if (collide(arena, player)) {
+        player.pos.x -= dir;
+      }
+    }
+
+    // Reset player
+    function playerReset() {
+      const pieces = 'ILJOTSZ';
+      player.matrix = createPiece(pieces[Math.random() * pieces.length | 0]);
+      player.pos.y = 0;
+      player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+      if (collide(arena, player)) {
+        arena.forEach(row => row.fill(0));
+      }
+    }
+
+    // Drop time
+    let dropCounter = 0;
+    let lastTime = 0;
+    function update(time = 0) {
+      dropCounter += time - lastTime;
+      lastTime = time;
+      if (dropCounter > 1000) {
+        playerDrop();
+      }
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    const arena = createMatrix(boardWidth, boardHeight);
+    const player = { pos: { x: 0, y: 0 }, matrix: null };
+    document.addEventListener('keydown', event => {
+      if (event.key === 'ArrowLeft') playerMove(-1);
+      if (event.key === 'ArrowRight') playerMove(1);
+      if (event.key === 'ArrowDown') playerDrop();
+    });
+
+    playerReset();
+    update();
+  </script>
 </body>
 </html>
