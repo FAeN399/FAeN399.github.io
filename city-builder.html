@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Major City Map with Resizing Options</title>
+  <title>Major City Map with Resizing, Pan & Zoom</title>
   <style>
     /* Base Styles */
     body {
@@ -20,6 +20,10 @@
       border: 1px solid #ccc;
       display: block;
       margin: 20px auto;
+      cursor: grab;
+    }
+    svg:active {
+      cursor: grabbing;
     }
     text {
       font-family: Arial, sans-serif;
@@ -176,55 +180,58 @@
   
   <!-- SVG Map of the City -->
   <svg id="city-map" width="800" height="600" xmlns="http://www.w3.org/2000/svg">
-    <!-- Outer City Walls -->
-    <rect id="city-walls" x="50" y="50" width="700" height="500" fill="none" stroke="black" stroke-width="4" />
-    <text id="city-walls-label" x="400" y="45" text-anchor="middle" font-size="16" font-weight="bold">City Walls</text>
-    
-    <!-- City Gates -->
-    <circle cx="400" cy="50" r="6" fill="#000" />
-    <text x="400" y="30" text-anchor="middle" font-size="12">North Gate</text>
-    
-    <circle cx="400" cy="550" r="6" fill="#000" />
-    <text x="400" y="570" text-anchor="middle" font-size="12">South Gate</text>
-    
-    <circle cx="750" cy="300" r="6" fill="#000" />
-    <text x="770" y="300" text-anchor="start" font-size="12">East Gate</text>
-    
-    <circle cx="50" cy="300" r="6" fill="#000" />
-    <text x="30" y="300" text-anchor="end" font-size="12">West Gate</text>
-    
-    <!-- Pre-Defined Districts -->
-    <rect id="castle" x="80" y="80" width="180" height="140" fill="#d4e6f1" stroke="#2e86c1" stroke-width="2" />
-    <text id="castle-label" x="170" y="155" text-anchor="middle" font-size="16" font-weight="bold">Castle</text>
-    
-    <rect id="market" x="300" y="200" width="250" height="200" fill="#f9e79f" stroke="#f1c40f" stroke-width="2" />
-    <text id="market-label" x="425" y="300" text-anchor="middle" font-size="16" font-weight="bold">Market District</text>
-    
-    <rect id="residential" x="80" y="240" width="180" height="200" fill="#d5f5e3" stroke="#27ae60" stroke-width="2" />
-    <text id="residential-label" x="170" y="340" text-anchor="middle" font-size="16" font-weight="bold">Residential</text>
-    
-    <rect id="temple" x="600" y="80" width="150" height="120" fill="#fadbd8" stroke="#e74c3c" stroke-width="2" />
-    <text id="temple-label" x="675" y="150" text-anchor="middle" font-size="16" font-weight="bold">Temple</text>
-    
-    <rect id="guilds" x="80" y="460" width="180" height="80" fill="#e8daef" stroke="#8e44ad" stroke-width="2" />
-    <text id="guilds-label" x="170" y="500" text-anchor="middle" font-size="16" font-weight="bold">Guilds</text>
-    
-    <rect id="slums" x="600" y="350" width="150" height="100" fill="#f5cba7" stroke="#d35400" stroke-width="2" />
-    <text id="slums-label" x="675" y="405" text-anchor="middle" font-size="16" font-weight="bold">Slums</text>
-    
-    <!-- Roads Connecting Districts (static for now) -->
-    <line x1="170" y1="220" x2="425" y2="200" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
-    <line x1="260" y1="150" x2="600" y2="140" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
-    <line x1="170" y1="340" x2="170" y2="500" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
-    <line x1="425" y1="400" x2="675" y2="400" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+    <!-- Wrap all elements inside a viewport group for pan/zoom -->
+    <g id="viewport">
+      <!-- Outer City Walls -->
+      <rect id="city-walls" x="50" y="50" width="700" height="500" fill="none" stroke="black" stroke-width="4" />
+      <text id="city-walls-label" x="400" y="45" text-anchor="middle" font-size="16" font-weight="bold">City Walls</text>
+      
+      <!-- City Gates -->
+      <circle cx="400" cy="50" r="6" fill="#000" />
+      <text x="400" y="30" text-anchor="middle" font-size="12">North Gate</text>
+      
+      <circle cx="400" cy="550" r="6" fill="#000" />
+      <text x="400" y="570" text-anchor="middle" font-size="12">South Gate</text>
+      
+      <circle cx="750" cy="300" r="6" fill="#000" />
+      <text x="770" y="300" text-anchor="start" font-size="12">East Gate</text>
+      
+      <circle cx="50" cy="300" r="6" fill="#000" />
+      <text x="30" y="300" text-anchor="end" font-size="12">West Gate</text>
+      
+      <!-- Pre-Defined Districts -->
+      <rect id="castle" x="80" y="80" width="180" height="140" fill="#d4e6f1" stroke="#2e86c1" stroke-width="2" />
+      <text id="castle-label" x="170" y="155" text-anchor="middle" font-size="16" font-weight="bold">Castle</text>
+      
+      <rect id="market" x="300" y="200" width="250" height="200" fill="#f9e79f" stroke="#f1c40f" stroke-width="2" />
+      <text id="market-label" x="425" y="300" text-anchor="middle" font-size="16" font-weight="bold">Market District</text>
+      
+      <rect id="residential" x="80" y="240" width="180" height="200" fill="#d5f5e3" stroke="#27ae60" stroke-width="2" />
+      <text id="residential-label" x="170" y="340" text-anchor="middle" font-size="16" font-weight="bold">Residential</text>
+      
+      <rect id="temple" x="600" y="80" width="150" height="120" fill="#fadbd8" stroke="#e74c3c" stroke-width="2" />
+      <text id="temple-label" x="675" y="150" text-anchor="middle" font-size="16" font-weight="bold">Temple</text>
+      
+      <rect id="guilds" x="80" y="460" width="180" height="80" fill="#e8daef" stroke="#8e44ad" stroke-width="2" />
+      <text id="guilds-label" x="170" y="500" text-anchor="middle" font-size="16" font-weight="bold">Guilds</text>
+      
+      <rect id="slums" x="600" y="350" width="150" height="100" fill="#f5cba7" stroke="#d35400" stroke-width="2" />
+      <text id="slums-label" x="675" y="405" text-anchor="middle" font-size="16" font-weight="bold">Slums</text>
+      
+      <!-- Roads Connecting Districts (static for now) -->
+      <line x1="170" y1="220" x2="425" y2="200" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+      <line x1="260" y1="150" x2="600" y2="140" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+      <line x1="170" y1="340" x2="170" y2="500" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+      <line x1="425" y1="400" x2="675" y2="400" stroke="#7f8c8d" stroke-width="4" stroke-dasharray="5,5" />
+    </g>
   </svg>
   
-  <!-- JavaScript for Updating and Creating Buildings & City Resizing -->
+  <!-- JavaScript for Updating, Creating, Panning, and Zooming -->
   <script>
     // Global counter for new buildings so that each has a unique id
     var newBuildingCounter = 1;
     
-    // Update the City (outer walls) dimensions and position
+    // ===================== City & Building Update Functions =====================
     function updateCity() {
       var cityX = document.getElementById('city-x').value;
       var cityY = document.getElementById('city-y').value;
@@ -234,7 +241,6 @@
       var cityWalls = document.getElementById('city-walls');
       var cityLabel = document.getElementById('city-walls-label');
       
-      // Use provided values (or fallback to current attributes)
       var updatedX = cityX !== "" ? parseFloat(cityX) : parseFloat(cityWalls.getAttribute('x'));
       var updatedY = cityY !== "" ? parseFloat(cityY) : parseFloat(cityWalls.getAttribute('y'));
       var updatedWidth = cityWidth !== "" ? parseFloat(cityWidth) : parseFloat(cityWalls.getAttribute('width'));
@@ -250,7 +256,6 @@
       cityLabel.setAttribute('y', updatedY - 5);
     }
     
-    // Update an existing building's properties (name, position, size)
     function updateBuilding() {
       var buildingId = document.getElementById('building-select').value;
       var newName = document.getElementById('new-name').value.trim();
@@ -262,10 +267,8 @@
       var building = document.getElementById(buildingId);
       var label = document.getElementById(buildingId + '-label');
       
-      // Update the name if provided
       if(newName !== "") {
         label.textContent = newName;
-        // Also update the corresponding option text in the dropdown
         var select = document.getElementById('building-select');
         for (var i = 0; i < select.options.length; i++) {
           if(select.options[i].value === buildingId) {
@@ -275,7 +278,6 @@
         }
       }
       
-      // Get current attributes or new values if provided
       var currX = parseFloat(building.getAttribute('x'));
       var currY = parseFloat(building.getAttribute('y'));
       var currWidth = parseFloat(building.getAttribute('width'));
@@ -286,13 +288,11 @@
       var updatedWidth = (newWidth !== "") ? parseFloat(newWidth) : currWidth;
       var updatedHeight = (newHeight !== "") ? parseFloat(newHeight) : currHeight;
       
-      // Update the building's attributes
       building.setAttribute('x', updatedX);
       building.setAttribute('y', updatedY);
       building.setAttribute('width', updatedWidth);
       building.setAttribute('height', updatedHeight);
       
-      // Update the label's position (centered; if city walls, position above)
       if(buildingId === "city-walls") {
         label.setAttribute('x', updatedX + updatedWidth / 2);
         label.setAttribute('y', updatedY - 5);
@@ -302,7 +302,6 @@
       }
     }
     
-    // Create a new building element on the SVG map
     function createBuilding() {
       var name = document.getElementById('create-name').value.trim();
       var x = document.getElementById('create-x').value;
@@ -312,13 +311,11 @@
       var fill = document.getElementById('create-fill').value.trim();
       var stroke = document.getElementById('create-stroke').value.trim();
       
-      // Basic validation
       if(name === "" || x === "" || y === "" || width === "" || height === "") {
         alert("Please fill out all required fields (Name, X, Y, Width, Height).");
         return;
       }
       
-      // Convert numeric values
       x = parseFloat(x);
       y = parseFloat(y);
       width = parseFloat(width);
@@ -326,11 +323,9 @@
       fill = (fill === "") ? "#ccc" : fill;
       stroke = (stroke === "") ? "#000" : stroke;
       
-      // Generate a unique id for the new building
       var newId = "new-building-" + newBuildingCounter;
       newBuildingCounter++;
       
-      // Create the new rectangle element
       var svgNS = "http://www.w3.org/2000/svg";
       var newRect = document.createElementNS(svgNS, "rect");
       newRect.setAttribute("id", newId);
@@ -342,7 +337,6 @@
       newRect.setAttribute("stroke", stroke);
       newRect.setAttribute("stroke-width", "2");
       
-      // Create the label element (centered)
       var newLabel = document.createElementNS(svgNS, "text");
       newLabel.setAttribute("id", newId + "-label");
       newLabel.setAttribute("x", x + width / 2);
@@ -352,19 +346,17 @@
       newLabel.setAttribute("font-weight", "bold");
       newLabel.textContent = name;
       
-      // Append the new elements to the SVG
-      var svg = document.getElementById('city-map');
-      svg.appendChild(newRect);
-      svg.appendChild(newLabel);
+      // Append new elements to the viewport group so pan/zoom applies
+      var viewport = document.getElementById('viewport');
+      viewport.appendChild(newRect);
+      viewport.appendChild(newLabel);
       
-      // Add the new building to the update dropdown
       var select = document.getElementById('building-select');
       var newOption = document.createElement("option");
       newOption.value = newId;
       newOption.text = name;
       select.appendChild(newOption);
       
-      // Clear the form fields
       document.getElementById('create-name').value = "";
       document.getElementById('create-x').value = "";
       document.getElementById('create-y').value = "";
@@ -373,6 +365,51 @@
       document.getElementById('create-fill').value = "";
       document.getElementById('create-stroke').value = "";
     }
+    
+    // ===================== Pan & Zoom Functionality =====================
+    (function() {
+      const svgMap = document.getElementById('city-map');
+      const viewport = document.getElementById('viewport');
+      let isPanning = false;
+      let startPoint = { x: 0, y: 0 };
+      let pan = { x: 0, y: 0 };
+      let zoom = 1;
+      
+      function setTransform() {
+        viewport.setAttribute("transform", `translate(${pan.x}, ${pan.y}) scale(${zoom})`);
+      }
+      
+      svgMap.addEventListener("mousedown", function(evt) {
+        isPanning = true;
+        startPoint = { x: evt.clientX, y: evt.clientY };
+      });
+      
+      svgMap.addEventListener("mousemove", function(evt) {
+        if (!isPanning) return;
+        const dx = evt.clientX - startPoint.x;
+        const dy = evt.clientY - startPoint.y;
+        pan.x += dx;
+        pan.y += dy;
+        startPoint = { x: evt.clientX, y: evt.clientY };
+        setTransform();
+      });
+      
+      svgMap.addEventListener("mouseup", function() {
+        isPanning = false;
+      });
+      
+      svgMap.addEventListener("mouseleave", function() {
+        isPanning = false;
+      });
+      
+      svgMap.addEventListener("wheel", function(evt) {
+        evt.preventDefault();
+        // Adjust zoom: scroll up to zoom in, scroll down to zoom out
+        const delta = evt.deltaY > 0 ? 0.9 : 1.1;
+        zoom *= delta;
+        setTransform();
+      });
+    })();
   </script>
 </body>
 </html>
