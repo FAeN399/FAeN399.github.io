@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Character Creation</title>
   <style>
     /* Basic resets */
@@ -15,22 +15,20 @@
       background: #222;
       color: #fff;
     }
-    /* Full-screen container */
+    /* Full-page container */
     .container {
       position: relative;
       width: 100%;
       height: 100%;
     }
-    /* Canvas for the Tetris game (background) */
+    /* The canvas where the Tetris game runs (background) */
     canvas#tetris {
       position: absolute;
       top: 50%;
       left: 50%;
-      /* The canvas size is set by JavaScript; we center it with CSS */
       transform: translate(-50%, -50%);
       z-index: 1;
       background: #000;
-      /* Optional: add a border for visual separation */
       border: 2px solid #555;
     }
     /* Foreground content overlay */
@@ -68,26 +66,27 @@
   <script>
     // ----- Tetris Game Code -----
 
+    // Get canvas and context
     const canvas = document.getElementById('tetris');
     const context = canvas.getContext('2d');
 
-    // Define board size and scale
+    // Define board size and scale factor (each block is 20x20 pixels)
     const scale = 20;
     const boardWidth = 12;
     const boardHeight = 20;
     canvas.width = boardWidth * scale;
     canvas.height = boardHeight * scale;
 
-    // Define colors for each piece (index 0 is unused)
+    // Colors for each piece (index 0 is unused)
     const colors = [
       null,
-      '#FF0D72', // for T
-      '#0DC2FF', // for O
-      '#0DFF72', // for L
-      '#F538FF', // for J
-      '#FF8E0D', // for I
-      '#FFE138', // for S
-      '#3877FF', // for Z
+      '#FF0D72', // T
+      '#0DC2FF', // O
+      '#0DFF72', // L
+      '#F538FF', // J
+      '#FF8E0D', // I
+      '#FFE138', // S
+      '#3877FF'  // Z
     ];
 
     // Create a matrix (2D array) filled with zeros
@@ -152,15 +151,20 @@
         row.forEach((value, x) => {
           if (value !== 0) {
             context.fillStyle = colors[value];
+            // Each block is drawn as a 1x1 rectangle in grid units.
             context.fillRect(x + offset.x, y + offset.y, 1, 1);
           }
         });
       });
     }
 
-    // Clear the canvas and redraw the board and active piece
+    // Clear the canvas and redraw the arena and active piece.
+    // We use setTransform to scale drawing operations so that 1 unit = 'scale' pixels.
     function draw() {
+      // Reset transform and apply scale so coordinates match our grid
+      context.setTransform(scale, 0, 0, scale, 0, 0);
       context.fillStyle = '#000';
+      // Clear the canvas in grid units (canvas.width/scale by canvas.height/scale)
       context.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
       drawMatrix(arena, { x: 0, y: 0 });
       drawMatrix(player.matrix, player.pos);
@@ -177,7 +181,7 @@
       });
     }
 
-    // Check for collision of the player's piece with the arena
+    // Check for collision of the player's piece with the arena or boundaries
     function collide(arena, player) {
       const m = player.matrix;
       const o = player.pos;
@@ -185,7 +189,11 @@
         for (let x = 0; x < m[y].length; x++) {
           if (
             m[y][x] !== 0 &&
-            (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0
+            (
+              // If the row doesn't exist (off the bottom) or the cell is occupied
+              !arena[y + o.y] ||
+              arena[y + o.y][x + o.x] !== 0
+            )
           ) {
             return true;
           }
@@ -194,7 +202,7 @@
       return false;
     }
 
-    // Sweep full rows in the arena and clear them
+    // Sweep full rows from the arena and clear them
     function arenaSweep() {
       outer: for (let y = arena.length - 1; y >= 0; y--) {
         for (let x = 0; x < arena[y].length; x++) {
@@ -222,7 +230,7 @@
       }
     }
 
-    // Drop the player's piece by one row
+    // Drop the player's piece by one row; if it collides, merge it and reset the player.
     function playerDrop() {
       player.pos.y++;
       if (collide(arena, player)) {
@@ -234,7 +242,7 @@
       dropCounter = 0;
     }
 
-    // Move the player's piece left or right
+    // Move the player's piece left or right; if a collision occurs, revert the move.
     function playerMove(dir) {
       player.pos.x += dir;
       if (collide(arena, player)) {
@@ -242,18 +250,19 @@
       }
     }
 
-    // Reset the player with a new random piece
+    // Reset the player with a new random piece.
     function playerReset() {
       const pieces = 'ILJOTSZ';
-      player.matrix = createPiece(pieces[Math.floor(pieces.length * Math.random())]);
+      player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
       player.pos.y = 0;
       player.pos.x = Math.floor(arena[0].length / 2) - Math.floor(player.matrix[0].length / 2);
+      // If the new piece immediately collides, clear the arena.
       if (collide(arena, player)) {
         arena.forEach(row => row.fill(0));
       }
     }
 
-    // Rotate the player's piece, adjusting its position if needed
+    // Rotate the player's piece, adjusting its position if necessary.
     function playerRotate(dir) {
       const pos = player.pos.x;
       let offset = 1;
@@ -269,24 +278,23 @@
       }
     }
 
+    // Timing variables for automatic dropping
     let dropCounter = 0;
-    let dropInterval = 1000; // milliseconds between automatic drops
+    const dropInterval = 1000; // Time in ms between automatic drops
 
     let lastTime = 0;
     function update(time = 0) {
       const deltaTime = time - lastTime;
       lastTime = time;
-
       dropCounter += deltaTime;
       if (dropCounter > dropInterval) {
         playerDrop();
       }
-
       draw();
       requestAnimationFrame(update);
     }
 
-    // Create the arena (the game board) and player object
+    // Create the arena (the game board) and initialize the player object
     const arena = createMatrix(boardWidth, boardHeight);
     const player = {
       pos: { x: 0, y: 0 },
@@ -295,20 +303,20 @@
 
     // Listen for key presses to control the piece
     document.addEventListener('keydown', event => {
-      if (event.keyCode === 37) {          // Left arrow
+      if (event.keyCode === 37) {         // Left arrow key
         playerMove(-1);
-      } else if (event.keyCode === 39) {   // Right arrow
+      } else if (event.keyCode === 39) {  // Right arrow key
         playerMove(1);
-      } else if (event.keyCode === 40) {   // Down arrow
+      } else if (event.keyCode === 40) {  // Down arrow key (soft drop)
         playerDrop();
-      } else if (event.keyCode === 81) {   // Q key rotates counter-clockwise
+      } else if (event.keyCode === 81) {  // Q key rotates counter-clockwise
         playerRotate(-1);
-      } else if (event.keyCode === 87) {   // W key rotates clockwise
+      } else if (event.keyCode === 87) {  // W key rotates clockwise
         playerRotate(1);
       }
     });
 
-    // Start the game
+    // Start the game by resetting the player and beginning the update loop
     playerReset();
     update();
   </script>
