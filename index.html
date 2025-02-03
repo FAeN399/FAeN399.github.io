@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fashadow</title>
   <style>
     /* Global Reset */
@@ -19,17 +19,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: Arial, sans-serif;
-      /* Animated dark gradient background */
-      background: linear-gradient(135deg, #1a1a1a, #333);
-      animation: backgroundShift 12s ease infinite;
+      font-family: 'Arial', sans-serif;
+      /* Deep purple gradient background with animation */
+      background: linear-gradient(135deg, #1a0033, #3a0050, #660066);
+      animation: backgroundShift 10s ease infinite;
       color: #fff;
       overflow: hidden;
     }
     @keyframes backgroundShift {
-      0%   { background: linear-gradient(135deg, #1a1a1a, #333); }
-      50%  { background: linear-gradient(135deg, #333, #1a1a1a); }
-      100% { background: linear-gradient(135deg, #1a1a1a, #333); }
+      0%   { background: linear-gradient(135deg, #1a0033, #3a0050, #660066); }
+      50%  { background: linear-gradient(135deg, #660066, #3a0050, #1a0033); }
+      100% { background: linear-gradient(135deg, #1a0033, #3a0050, #660066); }
     }
 
     /* Navigation Link */
@@ -41,7 +41,7 @@
       font-size: 1.2rem;
       text-decoration: none;
       background: rgba(255, 255, 255, 0.9);
-      color: #3498db;
+      color: #800080; /* dark purple */
       padding: 10px 20px;
       border-radius: 30px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -53,28 +53,30 @@
       transform: translateX(-50%) scale(1.05);
     }
 
-    /* Pulsing Hexagon */
+    /* Pulsing Hexagon with Purple Gradient */
     .hexagon {
       width: 400px;
       height: 400px;
-      background: #e74c3c;
+      background: linear-gradient(135deg, #8a2be2, #4b0082);
       clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
-      font-size: 3rem;
+      font-size: 4rem;
       font-weight: bold;
       text-align: center;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
-      animation: pulse 2.5s infinite;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      box-shadow: 0 0 50px rgba(138, 43, 226, 0.8);
+      animation: pulse 2s infinite;
       position: relative;
       z-index: 5;
     }
     @keyframes pulse {
-      0%   { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
-      50%  { transform: scale(1.05); box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); }
-      100% { transform: scale(1);    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
+      0%   { transform: scale(1);    box-shadow: 0 0 50px rgba(138, 43, 226, 0.8); }
+      50%  { transform: scale(1.1);  box-shadow: 0 0 80px rgba(138, 43, 226, 1); }
+      100% { transform: scale(1);    box-shadow: 0 0 50px rgba(138, 43, 226, 0.8); }
     }
 
     /* Tagline */
@@ -85,35 +87,35 @@
       text-align: center;
       font-size: 1.5rem;
       letter-spacing: 2px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
       z-index: 6;
     }
 
-    /* Fibonacci Spiral (artistic interpretation) */
+    /* Fibonacci Spiral Overlay (Artistic Interpretation) */
     .fibonacci {
       position: absolute;
       width: 300px;
       height: 300px;
       top: calc(50% - 150px);
       left: calc(50% - 150px);
-      opacity: 0.6;
+      opacity: 0.4;
       pointer-events: none;
       z-index: 2;
       transform: rotate(15deg);
     }
 
-    /* Sacred Geometry Overlay (Flower of Life-like pattern) */
+    /* Sacred Geometry Overlay: Flower of Life Pattern */
     .sacred-geometry {
       position: absolute;
       width: 800px;
       height: 600px;
       top: 0;
       left: 0;
-      opacity: 0.08;
+      opacity: 0.05;
       pointer-events: none;
       z-index: 1;
     }
-    /* Style for the Flower of Life pattern using overlapping circles */
     .sacred-geometry circle {
       fill: none;
       stroke: rgba(255, 255, 255, 0.1);
@@ -134,8 +136,8 @@
       position: absolute;
       font-size: 2rem;
       color: rgba(255, 255, 255, 0.4);
+      text-shadow: 0 0 5px rgba(138, 43, 226, 0.8);
     }
-    /* Position individual alchemical symbols */
     .alchemical-symbol.symbol-mercury   { top: 10%; left: 10%; }
     .alchemical-symbol.symbol-sun       { top: 10%; right: 10%; }
     .alchemical-symbol.symbol-moon      { bottom: 10%; left: 10%; }
@@ -147,11 +149,9 @@
   <!-- Navigation Link -->
   <a href="character-creation.html" class="character-link">Character Creation</a>
 
-  <!-- Sacred Geometry Overlay: Flower of Life-like pattern -->
+  <!-- Sacred Geometry Overlay: Flower of Life -->
   <svg class="sacred-geometry" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-    <!-- Center circle -->
     <circle cx="400" cy="300" r="100" />
-    <!-- 6 circles arranged around the center -->
     <circle cx="400" cy="200" r="100" />
     <circle cx="500" cy="250" r="100" />
     <circle cx="500" cy="350" r="100" />
@@ -185,6 +185,6 @@
   <div class="hexagon">Fashadow</div>
 
   <!-- Tagline -->
-  <div class="tagline">Where Shadows, Fate, Fibonacci, Alchemy & Sacred Geometry Converge</div>
+  <div class="tagline">Where Intensity, Fate & the Purple Cosmos Converge</div>
 </body>
 </html>
