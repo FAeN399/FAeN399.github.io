@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Persona Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #eee;
+    }
+    h1, h2 {
+      color: #4B0082; /* Indigoy-Purple */
+    }
+    .hidden {
+      display: none;
+    }
+    .persona-item {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Persona Manager</h1>
+
+  <!-- Choose Add or Use -->
+  <button onclick="showAddPersona()">Add New Persona</button>
+  <button onclick="showUsePersona()">Use Existing Persona(s)</button>
+
+  <!-- ADD NEW PERSONA SECTION -->
+  <div id="addPersonaSection" class="hidden">
+    <h2>Add New Persona</h2>
+    <label for="personaName">Name:</label><br>
+    <input type="text" id="personaName" style="width: 300px;"><br><br>
+
+    <label for="personaDesc">Description:</label><br>
+    <textarea id="personaDesc" rows="4" cols="50"></textarea><br><br>
+
+    <button onclick="addPersona()">Save Persona</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <!-- USE EXISTING PERSONA SECTION -->
+  <div id="usePersonaSection" class="hidden">
+    <h2>Use Existing Personas</h2>
+    <div id="personaList"></div>
+    <br>
+    <button onclick="exportSelectedPersonas()">Output to File</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <script>
+    // We'll store personas in localStorage under key "storedPersonas"
+    // Each persona is { name: "X", description: "Y" }
+
+    function showAddPersona() {
+      hideAll();
+      document.getElementById('addPersonaSection').classList.remove('hidden');
+    }
+
+    function showUsePersona() {
+      hideAll();
+      document.getElementById('usePersonaSection').classList.remove('hidden');
+      displayPersonas();
+    }
+
+    function hideAll() {
+      document.getElementById('addPersonaSection').classList.add('hidden');
+      document.getElementById('usePersonaSection').classList.add('hidden');
+    }
+
+    function getStoredPersonas() {
+      const stored = localStorage.getItem('storedPersonas');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveStoredPersonas(personas) {
+      localStorage.setItem('storedPersonas', JSON.stringify(personas));
+    }
+
+    function addPersona() {
+      const nameField = document.getElementById('personaName');
+      const descField = document.getElementById('personaDesc');
+
+      const newPersona = {
+        name: nameField.value.trim(),
+        description: descField.value.trim()
+      };
+
+      if (!newPersona.name) {
+        alert('Persona name cannot be empty.');
+        return;
+      }
+
+      // Get existing, add new one
+      const personas = getStoredPersonas();
+      personas.push(newPersona);
+      saveStoredPersonas(personas);
+
+      // Clear fields & hide section
+      nameField.value = '';
+      descField.value = '';
+      hideAll();
+      alert('Persona added successfully!');
+    }
+
+    function displayPersonas() {
+      const container = document.getElementById('personaList');
+      container.innerHTML = '';
+      const personas = getStoredPersonas();
+
+      if (personas.length === 0) {
+        container.innerHTML = '<p>No personas found.</p>';
+        return;
+      }
+
+      // Create a checkbox for each
+      personas.forEach((p, index) => {
+        const div = document.createElement('div');
+        div.className = 'persona-item';
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" value="${index}">
+            <strong>${p.name}</strong> - ${p.description}
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function exportSelectedPersonas() {
+      // Gather checked boxes
+      const checkboxes = document.querySelectorAll('#personaList input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert('No personas selected.');
+        return;
+      }
+
+      const personas = getStoredPersonas();
+      let outputText = '';
+      checkboxes.forEach(chk => {
+        const idx = parseInt(chk.value, 10);
+        const p = personas[idx];
+        outputText += `Name: ${p.name}\nDescription: ${p.description}\n\n`;
+      });
+
+      // "Output to file" by forcing a text file download
+      downloadFile('personaOutput.txt', outputText);
+
+      // If you want to "delete" old content, well, each time you download
+      // a new personaOutput.txt, it overwrites the previous content
+      // if you choose the same filename in your downloads folder.
+    }
+
+    function downloadFile(filename, text) {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+  </script>
+</body>
+</html>
