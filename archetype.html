@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Archetype Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #fafafa;
+    }
+    h1, h2 {
+      color: #800080; /* Purple-ish */
+    }
+    .hidden {
+      display: none;
+    }
+    .archetype-item {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Archetype Manager</h1>
+
+  <button onclick="showAddArchetype()">Add New Archetype</button>
+  <button onclick="showUseArchetype()">Use Existing Archetype(s)</button>
+
+  <!-- ADD NEW ARCHETYPE -->
+  <div id="addArchetypeSection" class="hidden">
+    <h2>Add New Archetype</h2>
+    <label for="archetypeName">Name:</label><br>
+    <input type="text" id="archetypeName" style="width: 300px;"><br><br>
+
+    <label for="archetypeDesc">Description:</label><br>
+    <textarea id="archetypeDesc" rows="4" cols="50"></textarea><br><br>
+
+    <button onclick="addArchetype()">Save Archetype</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <!-- USE EXISTING ARCHETYPE -->
+  <div id="useArchetypeSection" class="hidden">
+    <h2>Use Existing Archetypes</h2>
+    <div id="archetypeList"></div>
+    <br>
+    <button onclick="exportSelectedArchetypes()">Output to File</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <script>
+    function showAddArchetype() {
+      hideAll();
+      document.getElementById('addArchetypeSection').classList.remove('hidden');
+    }
+
+    function showUseArchetype() {
+      hideAll();
+      document.getElementById('useArchetypeSection').classList.remove('hidden');
+      displayArchetypes();
+    }
+
+    function hideAll() {
+      document.getElementById('addArchetypeSection').classList.add('hidden');
+      document.getElementById('useArchetypeSection').classList.add('hidden');
+    }
+
+    function getStoredArchetypes() {
+      const stored = localStorage.getItem('storedArchetypes');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveStoredArchetypes(archetypes) {
+      localStorage.setItem('storedArchetypes', JSON.stringify(archetypes));
+    }
+
+    function addArchetype() {
+      const nameField = document.getElementById('archetypeName');
+      const descField = document.getElementById('archetypeDesc');
+
+      const newArchetype = {
+        name: nameField.value.trim(),
+        description: descField.value.trim()
+      };
+
+      if (!newArchetype.name) {
+        alert('Archetype name cannot be empty.');
+        return;
+      }
+
+      const archetypes = getStoredArchetypes();
+      archetypes.push(newArchetype);
+      saveStoredArchetypes(archetypes);
+
+      nameField.value = '';
+      descField.value = '';
+      hideAll();
+      alert('Archetype added successfully!');
+    }
+
+    function displayArchetypes() {
+      const container = document.getElementById('archetypeList');
+      container.innerHTML = '';
+      const archetypes = getStoredArchetypes();
+
+      if (archetypes.length === 0) {
+        container.innerHTML = '<p>No archetypes found.</p>';
+        return;
+      }
+
+      archetypes.forEach((a, index) => {
+        const div = document.createElement('div');
+        div.className = 'archetype-item';
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" value="${index}">
+            <strong>${a.name}</strong> - ${a.description}
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function exportSelectedArchetypes() {
+      const checkboxes = document.querySelectorAll('#archetypeList input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert('No archetypes selected.');
+        return;
+      }
+
+      const archetypes = getStoredArchetypes();
+      let outputText = '';
+      checkboxes.forEach(chk => {
+        const idx = parseInt(chk.value, 10);
+        const a = archetypes[idx];
+        outputText += `Name: ${a.name}\nDescription: ${a.description}\n\n`;
+      });
+
+      // Force download a new text file
+      downloadFile('archetypeOutput.txt', outputText);
+    }
+
+    function downloadFile(filename, text) {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  </script>
+</body>
+</html>
