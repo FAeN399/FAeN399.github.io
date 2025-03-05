@@ -11,6 +11,7 @@
     body {
       position: relative;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: Arial, sans-serif;
@@ -44,10 +45,12 @@
       background: #fff;
       transform: scale(1.05);
     }
+    /* Centered Image with upward movement */
     .center-image {
       width: 400px;
       height: auto;
       z-index: 5;
+      transform: translateY(-100px); /* Moves the image up by 100px */
     }
     .rotating-quote {
       position: absolute;
@@ -67,7 +70,7 @@
 <body>
 
   <button class="select-btn" id="selectCategoryBtn">Select Category</button>
-  <img src="765df34e-f682-467a-a7a3-89592306d494.webp" alt="Fashadow" class="center-image">
+  <img src="Demitree.webp" alt="Fashadow" class="center-image">
   <div id="rotatingQuote" class="rotating-quote"></div>
 
   <script>
@@ -89,8 +92,6 @@
     fetch('quotes.json')
       .then(response => response.json())
       .then(data => {
-        // Assuming your JSON file has an array of quote objects
-        // If your file is structured as { "quotes": [ ... ] } then use data.quotes
         const quotesArray = data.quotes || data; 
         const randomIndex = Math.floor(Math.random() * quotesArray.length);
         const randomQuote = quotesArray[randomIndex];
