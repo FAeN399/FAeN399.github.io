@@ -97,21 +97,21 @@
   <img src="System.png" alt="Black Hole" class="black-hole">
   <div id="rotatingQuote" class="rotating-quote"></div>
 
-  <script>
-    // Navigation Button Logic
-    document.getElementById('selectCategoryBtn').addEventListener('click', function() {
-      const category = prompt("Which category do you want?\nEnter: persona, archetype, or traits").toLowerCase().trim();
-      if (category === "persona") {
-        window.location.href = "persona.html";
-      } else if (category === "archetype") {
-        window.location.href = "archetype.html";
-      } else if (category === "traits") {
-        window.location.href = "traits.html";
-      } else {
-        alert("Invalid category. Please enter persona, archetype, or traits.");
-      }
-   
-      .catch(error => console.error('Error fetching quotes:', error));
-  </script>
+ <script>
+  // Navigation Button Logic
+  document.getElementById('selectCategoryBtn').addEventListener('click', function() {
+    const category = prompt("Which category do you want?\nEnter: persona, archetype, or traits").toLowerCase().trim();
+    if (category === "persona") {
+      window.location.href = "persona.html";
+    } else if (category === "archetype") {
+      window.location.href = "archetype.html";
+    } else if (category === "traits") {
+      window.location.href = "traits.html";
+    } else {
+      alert("Invalid category. Please enter persona, archetype, or traits.");
+    }
+  });
+</script>
+
 </body>
 </html>
