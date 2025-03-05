@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Traits Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f0f0f0;
+    }
+    h1, h2 {
+      color: #2E8B57; /* SeaGreen-ish */
+    }
+    .hidden {
+      display: none;
+    }
+    .trait-item {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Traits Manager</h1>
+
+  <button onclick="showAddTrait()">Add New Trait</button>
+  <button onclick="showUseTrait()">Use Existing Trait(s)</button>
+
+  <!-- ADD NEW TRAIT SECTION -->
+  <div id="addTraitSection" class="hidden">
+    <h2>Add New Trait</h2>
+    <label for="traitName">Trait:</label><br>
+    <input type="text" id="traitName" style="width: 300px;"><br><br>
+    <button onclick="addTrait()">Save Trait</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <!-- USE EXISTING TRAIT SECTION -->
+  <div id="useTraitSection" class="hidden">
+    <h2>Use Existing Traits</h2>
+    <div id="traitList"></div>
+    <br>
+    <button onclick="exportSelectedTraits()">Output to File</button>
+    <button onclick="hideAll()">Cancel</button>
+  </div>
+
+  <script>
+    // Predefined traits list
+    const defaultTraits = [
+      "Accepting",
+      "Adaptable",
+      "Adventurous",
+      "Affectionate",
+      "Altruistic",
+      "Ambitious",
+      "Amiable",
+      "Analytical",
+      "Appreciative",
+      "Ardent",
+      "Articulate",
+      "Assertive",
+      "Attentive",
+      "Balanced",
+      "Benevolent",
+      "Bold",
+      "Brave",
+      "Calm",
+      "Candid",
+      "Caring",
+      "Charismatic",
+      "Charming",
+      "Cheerful",
+      "Clever",
+      "Compassionate",
+      "Competitive (can be positive if friendly/healthy)",
+      "Confident",
+      "Conscientious",
+      "Considerate",
+      "Consistent",
+      "Cooperative",
+      "Courageous",
+      "Courteous",
+      "Creative",
+      "Critical Thinker (analytic in a constructive way)",
+      "Curious",
+      "Daring",
+      "Decisive",
+      "Dependable",
+      "Determined",
+      "Diplomatic",
+      "Disciplined",
+      "Discreet",
+      "Driven",
+      "Dynamic",
+      "Eager",
+      "Easygoing",
+      "Efficient",
+      "Empathetic",
+      "Encouraging",
+      "Energetic",
+      "Enterprising",
+      "Enthusiastic",
+      "Ethical",
+      "Even-tempered",
+      "Expressive",
+      "Fair",
+      "Faithful",
+      "Flexible",
+      "Focused",
+      "Forgiving",
+      "Friendly",
+      "Generous",
+      "Gentle",
+      "Genuine",
+      "Goal-oriented",
+      "Gracious",
+      "Grateful",
+      "Hardworking",
+      "Helpful",
+      "Honest",
+      "Hopeful",
+      "Humble",
+      "Humorous / Witty",
+      "Idealistic",
+      "Imaginative",
+      "Impartial",
+      "Independent",
+      "Industrious",
+      "Innovative",
+      "Insightful",
+      "Intelligent",
+      "Intuitive",
+      "Inventive",
+      "Kind",
+      "Logical",
+      "Loyal",
+      "Mature",
+      "Methodical",
+      "Modest",
+      "Motivated",
+      "Noble",
+      "Observant",
+      "Open-minded",
+      "Optimistic",
+      "Organized",
+      "Original",
+      "Outgoing",
+      "Patient",
+      "Perceptive",
+      "Perseverant",
+      "Persuasive",
+      "Pioneering",
+      "Practical",
+      "Pragmatic",
+      "Precise",
+      "Proactive",
+      "Productive",
+      "Professional",
+      "Progressive",
+      "Protective",
+      "Proud (healthy self-respect)",
+      "Prudent",
+      "Punctual",
+      "Purposeful",
+      "Quick-witted",
+      "Realistic",
+      "Reflective",
+      "Reliable",
+      "Resolute",
+      "Resourceful",
+      "Respectful",
+      "Responsible",
+      "Restrained (self-controlled)",
+      "Sincere",
+      "Skillful",
+      "Sociable",
+      "Spirited",
+      "Spontaneous",
+      "Steadfast",
+      "Strategic",
+      "Strong-willed",
+      "Supportive",
+      "Sympathetic",
+      "Tactful",
+      "Tenacious",
+      "Thorough",
+      "Thoughtful",
+      "Tolerant",
+      "Trusting",
+      "Trustworthy",
+      "Unassuming",
+      "Understanding",
+      "Unorthodox (in a creative/innovative way)",
+      "Valiant",
+      "Versatile",
+      "Visionary",
+      "Vivacious",
+      "Warm",
+      "Wise",
+      "Zealous (passionately dedicated)"
+    ];
+
+    // Preload traits into localStorage if not already present
+    function preloadTraits() {
+      if (!localStorage.getItem('storedTraits')) {
+        const traits = defaultTraits.map(trait => ({ name: trait, description: "" }));
+        localStorage.setItem('storedTraits', JSON.stringify(traits));
+      }
+    }
+    preloadTraits();
+
+    function showAddTrait() {
+      hideAll();
+      document.getElementById('addTraitSection').classList.remove('hidden');
+    }
+
+    function showUseTrait() {
+      hideAll();
+      document.getElementById('useTraitSection').classList.remove('hidden');
+      displayTraits();
+    }
+
+    function hideAll() {
+      document.getElementById('addTraitSection').classList.add('hidden');
+      document.getElementById('useTraitSection').classList.add('hidden');
+    }
+
+    function getStoredTraits() {
+      const stored = localStorage.getItem('storedTraits');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveStoredTraits(traits) {
+      localStorage.setItem('storedTraits', JSON.stringify(traits));
+    }
+
+    function addTrait() {
+      const traitField = document.getElementById('traitName');
+      const newTraitName = traitField.value.trim();
+      if (!newTraitName) {
+        alert('Trait cannot be empty.');
+        return;
+      }
+      const traits = getStoredTraits();
+      traits.push({ name: newTraitName, description: "" });
+      saveStoredTraits(traits);
+      traitField.value = '';
+      hideAll();
+      alert('Trait added successfully!');
+    }
+
+    function displayTraits() {
+      const container = document.getElementById('traitList');
+      container.innerHTML = '';
+      const traits = getStoredTraits();
+      if (traits.length === 0) {
+        container.innerHTML = '<p>No traits found.</p>';
+        return;
+      }
+      traits.forEach((t, index) => {
+        const div = document.createElement('div');
+        div.className = 'trait-item';
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" value="${index}">
+            <strong>${t.name}</strong>
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function exportSelectedTraits() {
+      const checkboxes = document.querySelectorAll('#traitList input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert('No traits selected.');
+        return;
+      }
+      const traits = getStoredTraits();
+      let outputText = 'Traits\n\n';
+      checkboxes.forEach(chk => {
+        const idx = parseInt(chk.value, 10);
+        const t = traits[idx];
+        outputText += `Trait: ${t.name}\n`;
+      });
+      downloadFile('traitsOutput.txt', outputText);
+    }
+
+    function downloadFile(filename, text) {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+  </script>
+</body>
+</html>
