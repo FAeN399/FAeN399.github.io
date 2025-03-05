@@ -6,21 +6,14 @@
   <title>Fashadow</title>
   <style>
     /* Global Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      height: 100%;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Arial', sans-serif;
-      /* Deep purple gradient background with animation */
+      font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #1a0033, #3a0050, #660066);
       animation: backgroundShift 10s ease infinite;
       color: #fff;
@@ -31,8 +24,6 @@
       50%  { background: linear-gradient(135deg, #660066, #3a0050, #1a0033); }
       100% { background: linear-gradient(135deg, #1a0033, #3a0050, #660066); }
     }
-
-    /* Navigation Button */
     .select-btn {
       position: absolute;
       top: 20px;
@@ -40,11 +31,11 @@
       transform: translateX(-50%);
       font-size: 1.2rem;
       text-decoration: none;
-      background: rgba(255, 255, 255, 0.9);
-      color: #800080; /* dark purple */
+      background: rgba(255,255,255,0.9);
+      color: #800080;
       padding: 10px 20px;
       border-radius: 30px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       transition: background 0.3s, transform 0.3s;
       z-index: 4;
       cursor: pointer;
@@ -53,120 +44,34 @@
       background: #fff;
       transform: scale(1.05);
     }
-
-    /* Remove the original hexagon styling and add new styling for the centered image */
     .center-image {
-      width: 400px; /* adjust width as needed */
+      width: 400px;
       height: auto;
       z-index: 5;
     }
-
-    /* Tagline */
-    .tagline {
+    .rotating-quote {
       position: absolute;
-      bottom: 50px;
-      width: 100%;
+      bottom: 20px;
+      width: 80%;
       text-align: center;
-      font-size: 1.5rem;
-      letter-spacing: 2px;
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
-      z-index: 6;
+      font-size: 1.2rem;
+      line-height: 1.5;
+      padding: 10px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 10px;
+      z-index: 7;
+      white-space: pre-wrap;
     }
-
-    /* Overlays (Geometry, Fibonacci, Alchemical Symbols) */
-    .sacred-geometry {
-      position: absolute;
-      width: 800px;
-      height: 600px;
-      top: 0;
-      left: 0;
-      opacity: 0.05;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .sacred-geometry circle {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.1);
-      stroke-width: 2;
-    }
-    .fibonacci {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      top: calc(50% - 150px);
-      left: calc(50% - 150px);
-      opacity: 0.4;
-      pointer-events: none;
-      z-index: 2;
-      transform: rotate(15deg);
-    }
-    .alchemical-symbols {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 3;
-    }
-    .alchemical-symbol {
-      position: absolute;
-      font-size: 2rem;
-      color: rgba(255, 255, 255, 0.4);
-      text-shadow: 0 0 5px rgba(138, 43, 226, 0.8);
-    }
-    .alchemical-symbol.symbol-mercury   { top: 10%; left: 10%; }
-    .alchemical-symbol.symbol-sun       { top: 10%; right: 10%; }
-    .alchemical-symbol.symbol-moon      { bottom: 10%; left: 10%; }
-    .alchemical-symbol.symbol-sulfur    { bottom: 10%; right: 10%; }
-    .alchemical-symbol.symbol-salt      { top: 50%; left: 5%; }
   </style>
 </head>
 <body>
 
-  <!-- Single Navigation Button -->
   <button class="select-btn" id="selectCategoryBtn">Select Category</button>
-
-  <!-- Sacred Geometry Overlay: Flower of Life -->
-  <svg class="sacred-geometry" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="400" cy="300" r="100" />
-    <circle cx="400" cy="200" r="100" />
-    <circle cx="500" cy="250" r="100" />
-    <circle cx="500" cy="350" r="100" />
-    <circle cx="400" cy="400" r="100" />
-    <circle cx="300" cy="350" r="100" />
-    <circle cx="300" cy="250" r="100" />
-  </svg>
-
-  <!-- Fibonacci Spiral Overlay -->
-  <svg class="fibonacci" viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg">
-    <path d="
-      M -20,0
-      A 20,20 0 0,1 0,-20
-      A 20,20 0 0,1 20,0
-      A 40,40 0 0,0 20,40
-      A 60,60 0 0,0 -40,40
-      A 100,100 0 0,1 -40,-60
-    " stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="2"/>
-  </svg>
-
-  <!-- Alchemical Symbols Overlay -->
-  <div class="alchemical-symbols">
-    <span class="alchemical-symbol symbol-mercury">☿</span>
-    <span class="alchemical-symbol symbol-sun">☉</span>
-    <span class="alchemical-symbol symbol-moon">☾</span>
-    <span class="alchemical-symbol symbol-sulfur">▲</span>
-    <span class="alchemical-symbol symbol-salt">■</span>
-  </div>
-
-  <!-- Centered Image (replacing the pulsing hexagon) -->
-  <img src="Demitree.webp" alt="Fashadow" class="center-image">
-
-  <!-- Tagline -->
-  <div class="tagline">Where Intensity, Fate & the Purple Cosmos Converge</div>
+  <img src="765df34e-f682-467a-a7a3-89592306d494.webp" alt="Fashadow" class="center-image">
+  <div id="rotatingQuote" class="rotating-quote"></div>
 
   <script>
+    // Navigation Button Logic
     document.getElementById('selectCategoryBtn').addEventListener('click', function() {
       const category = prompt("Which category do you want?\nEnter: persona, archetype, or traits").toLowerCase().trim();
       if (category === "persona") {
@@ -179,6 +84,19 @@
         alert("Invalid category. Please enter persona, archetype, or traits.");
       }
     });
+
+    // Fetch quotes from quotes.json and display a random quote
+    fetch('quotes.json')
+      .then(response => response.json())
+      .then(data => {
+        // Assuming your JSON file has an array of quote objects
+        // If your file is structured as { "quotes": [ ... ] } then use data.quotes
+        const quotesArray = data.quotes || data; 
+        const randomIndex = Math.floor(Math.random() * quotesArray.length);
+        const randomQuote = quotesArray[randomIndex];
+        document.getElementById("rotatingQuote").innerText = randomQuote.text;
+      })
+      .catch(error => console.error('Error fetching quotes:', error));
   </script>
 </body>
 </html>
