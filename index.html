@@ -25,13 +25,13 @@
       50%  { background: linear-gradient(135deg, #660066, #3a0050, #1a0033); }
       100% { background: linear-gradient(135deg, #1a0033, #3a0050, #660066); }
     }
+    /* Navigation Button */
     .select-btn {
       position: absolute;
       top: 20px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 1.2rem;
-      text-decoration: none;
       background: rgba(255,255,255,0.9);
       color: #800080;
       padding: 10px 20px;
@@ -45,14 +45,38 @@
       background: #fff;
       transform: scale(1.05);
     }
-    /* Centered Image (Demitree) moved upward */
+    /* Modal for Category Selection */
+    .modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.95);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 10;
+      display: none;
+      text-align: center;
+      color: #800080;
+    }
+    .modal button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal h2 {
+      margin-bottom: 15px;
+    }
+    /* Overlays, Images, and Other Styles (unchanged) */
     .center-image {
       width: 400px;
       height: auto;
       z-index: 5;
       transform: translateY(-100px);
     }
-    /* Black Hole on the right */
     .black-hole {
       position: absolute;
       right: 0;
@@ -62,7 +86,6 @@
       height: auto;
       z-index: 5;
     }
-    /* Neutron Star on the left */
     .neutron-star {
       position: absolute;
       left: 0;
@@ -85,33 +108,135 @@
       z-index: 7;
       white-space: pre-wrap;
     }
+    .hexagon {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #8a2be2, #4b0082);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 4rem;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      box-shadow: 0 0 50px rgba(138,43,226,0.8);
+      animation: pulse 2s infinite;
+      position: relative;
+      z-index: 5;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(1); box-shadow: 0 0 50px rgba(138,43,226,0.8); }
+      50%  { transform: scale(1.1); box-shadow: 0 0 80px rgba(138,43,226,1); }
+      100% { transform: scale(1); box-shadow: 0 0 50px rgba(138,43,226,0.8); }
+    }
+    .tagline {
+      position: absolute;
+      bottom: 50px;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 0 10px rgba(138,43,226,0.8);
+      z-index: 6;
+    }
+    .sacred-geometry {
+      position: absolute;
+      width: 800px;
+      height: 600px;
+      top: 0;
+      left: 0;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .sacred-geometry circle {
+      fill: none;
+      stroke: rgba(255,255,255,0.1);
+      stroke-width: 2;
+    }
+    .fibonacci {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      top: calc(50% - 150px);
+      left: calc(50% - 150px);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 2;
+      transform: rotate(15deg);
+    }
+    .alchemical-symbols {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .alchemical-symbol {
+      position: absolute;
+      font-size: 2rem;
+      color: rgba(255,255,255,0.4);
+      text-shadow: 0 0 5px rgba(138,43,226,0.8);
+    }
+    .alchemical-symbol.symbol-mercury { top: 10%; left: 10%; }
+    .alchemical-symbol.symbol-sun { top: 10%; right: 10%; }
+    .alchemical-symbol.symbol-moon { bottom: 10%; left: 10%; }
+    .alchemical-symbol.symbol-sulfur { bottom: 10%; right: 10%; }
+    .alchemical-symbol.symbol-salt { top: 50%; left: 5%; }
   </style>
 </head>
 <body>
+  <!-- Single Navigation Button -->
   <button class="select-btn" id="selectCategoryBtn">Select Category</button>
+  
+  <!-- Modal for Selection -->
+  <div class="modal" id="categoryModal">
+    <h2>Select a Category</h2>
+    <button class="modal-option" data-category="persona">Persona</button>
+    <button class="modal-option" data-category="archetype">Archetype</button>
+    <button class="modal-option" data-category="traits">Traits</button>
+    <br>
+    <button id="modalCancelBtn">Cancel</button>
+  </div>
+  
   <!-- Neutron Star on the left -->
   <img src="neutronstar.webp" alt="Neutron Star" class="neutron-star">
-  <!-- Centered Image: Demitree -->
+  <!-- Centered Image -->
   <img src="Demitree.webp" alt="Fashadow" class="center-image">
   <!-- Black Hole on the right -->
   <img src="System.png" alt="Black Hole" class="black-hole">
   <div id="rotatingQuote" class="rotating-quote"></div>
+  <div class="hexagon">Fashadow</div>
+  <div class="tagline">Where Intensity, Fate & the Purple Cosmos Converge</div>
 
- <script>
-  // Navigation Button Logic
-  document.getElementById('selectCategoryBtn').addEventListener('click', function() {
-    const category = prompt("Which category do you want?\nEnter: persona, archetype, or traits").toLowerCase().trim();
-    if (category === "persona") {
-      window.location.href = "persona.html";
-    } else if (category === "archetype") {
-      window.location.href = "archetype.html";
-    } else if (category === "traits") {
-      window.location.href = "traits.html";
-    } else {
-      alert("Invalid category. Please enter persona, archetype, or traits.");
-    }
-  });
-</script>
-
+  <script>
+    // Show modal when button is clicked
+    document.getElementById('selectCategoryBtn').addEventListener('click', function() {
+      document.getElementById('categoryModal').style.display = 'block';
+    });
+    // Hide modal when cancel is clicked
+    document.getElementById('modalCancelBtn').addEventListener('click', function() {
+      document.getElementById('categoryModal').style.display = 'none';
+    });
+    // Add click listeners for each modal option
+    document.querySelectorAll('.modal-option').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
+        if (category === "persona") {
+          window.location.href = "persona.html";
+        } else if (category === "archetype") {
+          window.location.href = "archetype.html";
+        } else if (category === "traits") {
+          window.location.href = "traits.html";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
