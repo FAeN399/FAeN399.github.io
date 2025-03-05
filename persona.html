@@ -128,24 +128,27 @@
       });
     }
 
-    function exportSelectedPersonas() {
-      // Gather checked boxes
-      const checkboxes = document.querySelectorAll('#personaList input[type="checkbox"]:checked');
-      if (checkboxes.length === 0) {
-        alert('No personas selected.');
-        return;
-      }
+   function exportSelectedPersonas() {
+  // Gather checked boxes
+  const checkboxes = document.querySelectorAll('#personaList input[type="checkbox"]:checked');
+  if (checkboxes.length === 0) {
+    alert('No personas selected.');
+    return;
+  }
 
-      const personas = getStoredPersonas();
-      let outputText = '';
-      checkboxes.forEach(chk => {
-        const idx = parseInt(chk.value, 10);
-        const p = personas[idx];
-        outputText += `Name: ${p.name}\nDescription: ${p.description}\n\n`;
-      });
+  const personas = getStoredPersonas();
+  // Add header "Persona" at the top of the output
+  let outputText = 'Persona\n\n';
+  checkboxes.forEach(chk => {
+    const idx = parseInt(chk.value, 10);
+    const p = personas[idx];
+    outputText += `Name: ${p.name}\nDescription: ${p.description}\n\n`;
+  });
 
-      // "Output to file" by forcing a text file download
-      downloadFile('personaOutput.txt', outputText);
+  // Force download a new text file (if you save with the same name, it overwrites the previous content)
+  downloadFile('personaOutput.txt', outputText);
+}
+
 
       // If you want to "delete" old content, well, each time you download
       // a new personaOutput.txt, it overwrites the previous content
