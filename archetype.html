@@ -122,22 +122,24 @@
     }
 
     function exportSelectedArchetypes() {
-      const checkboxes = document.querySelectorAll('#archetypeList input[type="checkbox"]:checked');
-      if (checkboxes.length === 0) {
-        alert('No archetypes selected.');
-        return;
-      }
+  const checkboxes = document.querySelectorAll('#archetypeList input[type="checkbox"]:checked');
+  if (checkboxes.length === 0) {
+    alert('No archetypes selected.');
+    return;
+  }
 
-      const archetypes = getStoredArchetypes();
-      let outputText = '';
-      checkboxes.forEach(chk => {
-        const idx = parseInt(chk.value, 10);
-        const a = archetypes[idx];
-        outputText += `Name: ${a.name}\nDescription: ${a.description}\n\n`;
-      });
+  const archetypes = getStoredArchetypes();
+  // Add header "Archetype" at the top of the output
+  let outputText = 'Archetype\n\n';
+  checkboxes.forEach(chk => {
+    const idx = parseInt(chk.value, 10);
+    const a = archetypes[idx];
+    outputText += `Name: ${a.name}\nDescription: ${a.description}\n\n`;
+  });
 
-      // Force download a new text file
-      downloadFile('archetypeOutput.txt', outputText);
+  downloadFile('archetypeOutput.txt', outputText);
+}
+
     }
 
     function downloadFile(filename, text) {
