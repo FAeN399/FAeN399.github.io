@@ -56,8 +56,21 @@
       left: 60%;
     }
     .traits-link {
-      bottom; 50%
-    }
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #800080;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.3s;
+  z-index: 4;
+}
+
     .character-link:hover {
       background: #fff;
       transform: scale(1.05);
