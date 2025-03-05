@@ -112,14 +112,7 @@
       }
     });
 
-    // Fetch quotes from quotes.json and display a random quote
-    fetch('quotes.json')
-      .then(response => response.json())
-      .then(data => {
-        const quotesArray = data.quotes || data;
-        const randomIndex = Math.floor(Math.random() * quotesArray.length);
-        const randomQuote = quotesArray[randomIndex];
-        document.getElementById("rotatingQuote").innerText = randomQuote.text;
+   
       })
       .catch(error => console.error('Error fetching quotes:', error));
   </script>
