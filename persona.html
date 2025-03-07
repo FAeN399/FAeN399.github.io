@@ -106,7 +106,9 @@
 
     function displayPersonas() {
       const container = document.getElementById('personaList');
-      container.innerHTML = '';
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
       const personas = getStoredPersonas();
 
       if (personas.length === 0) {

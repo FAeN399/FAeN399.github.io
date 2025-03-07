@@ -1,0 +1,140 @@
+<!-- filepath: /workspaces/FAeN399.github.io/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Mystic Library - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+  <style>
+    /* 
+      Mystic Library - Home Page Styles 
+      Using an alchemical color scheme with gradients and subtle geometric patterns.
+      Embedded CSS is used for self-containment. 
+    */
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at center, rgba(255, 223, 0, 0.2) 0%, #1a002b 80%, #000 100%);
+      color: #e0e0e0;
+      font-family: 'Cinzel Decorative', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      background: linear-gradient(to right, rgba(25,0,50,0.9), rgba(0,0,0,0.9));
+      width: 100%;
+      padding: 0;
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      height: 60px;
+    }
+    nav li {
+      margin: 0 1.5em;
+    }
+    nav a {
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 1.1em;
+      padding: 8px 12px;
+      display: inline-block;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    nav a:hover {
+      background: rgba(212, 175, 55, 0.2);
+      color: #ffffff;
+      border-radius: 4px;
+    }
+    nav a.active {
+      border-bottom: 2px solid #d4af37;
+    }
+    main.centerpiece-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+    #merkabah-container {
+      position: relative;
+      display: inline-block;
+    }
+    #merkabah-container img {
+      width: clamp(150px, 30vw, 300px);
+      max-width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+      transition: transform 0.6s ease, filter 0.6s ease;
+    }
+    #merkabah-container:hover img {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    }
+    #merkabah-container .tooltip {
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.9em;
+      width: max-content;
+      max-width: 200px;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+    #merkabah-container:hover .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+    #merkabah-container .tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba(0, 0, 0, 0.8);
+    }
+    @media (max-width: 400px) {
+      nav ul {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+      }
+      nav li {
+        margin: 0.5em 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="library.html">Library</a></li>
+    </ul>
+  </nav>
+  <main class="centerpiece-container">
+    <div id="merkabah-container">
+      <img id="merkabah" src="images/merkabah.png" alt="Merkabah (star tetrahedron) within a Vector Equilibrium (cuboctahedron)">
+      <div class="tooltip">
+        The Merkabah (star tetrahedron) enclosed in the Vector Equilibrium symbolizes perfect balance and harmony.
+      </div>
+    </div>
+  </main>
+</body>
+</html>
