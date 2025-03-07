@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Mystic Library - Library</title>
   <!-- Import the same mystical font for consistency -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap"
+    rel="stylesheet"
+  />
   <style>
     /* 
       Mystic Library - Library Page Styles 
-      Reusing the alchemical color scheme and responsive design from the home page.
-      Embedded CSS for self-containment.
+      Alchemical color scheme + responsive design from the home page.
+      You are the Demiurge, the architect of all the architects, 
+      ensuring every detail is perfectly constructed.
     */
     html, body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at center, rgba(255, 223, 0, 0.2) 0%, #1a002b 80%, #000 100%);
+      background: radial-gradient(
+        circle at center,
+        rgba(255, 223, 0, 0.2) 0%,
+        #1a002b 80%,
+        #000 100%
+      );
       color: #e0e0e0;
       font-family: 'Cinzel Decorative', serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    /* Top navigation (same style as home page) */
+    /* Top navigation (consistent with the home page) */
     nav {
-      background: linear-gradient(to right, rgba(25,0,50,0.9), rgba(0,0,0,0.9));
+      background: linear-gradient(
+        to right,
+        rgba(25, 0, 50, 0.9),
+        rgba(0, 0, 0, 0.9)
+      );
       width: 100%;
     }
     nav ul {
@@ -40,17 +53,17 @@
       margin: 0 1.5em;
     }
     nav a {
-      color: #d4af37;
+      color: #d4af37; /* Gold color to match the alchemical theme */
       text-decoration: none;
       font-size: 1.1em;
-      padding: 8px 12px;
+      padding: 10px 16px; /* Larger area for a better fit and look */
       display: inline-block;
       transition: background 0.3s ease, color 0.3s ease;
+      border-radius: 4px; /* Slightly rounded corners for a refined look */
     }
     nav a:hover {
       background: rgba(212, 175, 55, 0.2);
       color: #ffffff;
-      border-radius: 4px;
     }
     /* Highlight the current page in the nav */
     nav a.active {
@@ -61,7 +74,7 @@
     main.library-content {
       max-width: 800px;
       margin: 2em auto;
-      padding: 0 1em 3em;  /* bottom padding for comfort on mobile devices */
+      padding: 0 1em 3em; /* bottom padding for comfort on mobile devices */
     }
     main.library-content h1 {
       font-size: 2em;
@@ -82,44 +95,53 @@
       padding-bottom: 0.2em;
     }
     section ul {
-      margin: 0 0 0 1.2em;  /* indent the list for clarity */
+      margin: 0 0 0 1.2em; /* indent the list for clarity */
       padding: 0;
     }
     section ul li {
       margin: 6px 0;
     }
     section ul li::marker {
-      color: #d4af37;  /* make list bullet points gold */
+      color: #d4af37; /* make list bullet points gold */
     }
 
-    /* Upload form styling (simulated, not functional) */
+    /* File upload form styling */
     .upload-form {
       margin-top: 2em;
       padding: 1em;
       border: 2px dashed #888;
       border-radius: 5px;
       text-align: center;
+      background: rgba(255, 255, 255, 0.05); /* subtle highlight behind dashed border */
     }
     .upload-form h3 {
       margin-top: 0;
       color: #e0e0e0;
     }
-    .upload-form input[type=file] {
-      /* Basic styling for file input to ensure it's visible on dark background */
+    .upload-form label {
+      display: inline-block;
+      margin-bottom: 0.5em;
+      font-size: 1em;
+      font-weight: bold;
+    }
+    .upload-form input[type='file'] {
       background: #ffffff;
       color: #000;
       border: none;
+      padding: 0.3em;
       margin: 0.5em 0;
+      cursor: pointer;
     }
     .upload-form button {
       background: #d4af37;
       color: #000;
       font-weight: bold;
-      padding: 6px 12px;
+      padding: 10px 16px; /* Slightly larger for a balanced look */
       border: none;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.3s ease;
+      margin-top: 0.5em; /* Some separation from the file input */
     }
     .upload-form button:hover {
       background: #e6c15a;
@@ -141,6 +163,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Top Navigation -->
   <nav>
@@ -153,7 +176,7 @@
   <!-- Main content of Library page -->
   <main class="library-content">
     <h1>Library</h1>
-    <p>Welcome to my personal library. Browse through my notes, poems, and writings below.</p>
+    <p>Welcome to my personal library. Browse through my notes, poems, and writings below. You, the Demiurge, have crafted this space with cosmic precision.</p>
     
     <!-- Example sections for content categories -->
     <section>
@@ -178,26 +201,21 @@
       </ul>
     </section>
     
-    <!-- Simulated upload form (for future integration) -->
-    <form class="upload-form">
-      <h3>Upload a new entry</h3>
-      <input type="file" name="file" id="fileInput">
-      <button type="button" id="uploadBtn">Upload</button>
-      <!-- Note: This upload form is static and non-functional.
-           In a real implementation, add JavaScript or server-side code to handle file uploads. -->
+    <!-- File Upload Form (real or simulated) -->
+    <form class="upload-form" action="#" method="POST" enctype="multipart/form-data">
+      <!-- 
+        If you want a REAL upload, change `action="#"` to your server endpoint, 
+        e.g. "upload.php" or a cloud function.
+      -->
+      <h3>Upload a New Entry</h3>
+      <label for="fileInput">Choose a file:</label><br/>
+      <input type="file" name="file" id="fileInput" required/><br/>
+      <button type="submit">Upload</button>
+      <!-- 
+        Note: For a real file upload to work, you need server logic to handle this form submission. 
+        GitHub Pages won't do it automatically because it's static hosting.
+      -->
     </form>
   </main>
-
-  <script>
-    document.getElementById('uploadBtn').addEventListener('click', function() {
-      var fileInput = document.getElementById('fileInput');
-      var file = fileInput.files[0];
-      if (file) {
-        alert('File uploaded: ' + file.name);
-      } else {
-        alert('No file selected.');
-      }
-    });
-  </script>
 </body>
 </html>

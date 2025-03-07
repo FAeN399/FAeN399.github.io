@@ -139,7 +139,7 @@
   </nav>
   <main class="centerpiece-container">
     <div id="merkabah-container">
-      <img id="merkabah" src="merkabah.png" alt="Merkabah (star tetrahedron) within a Vector Equilibrium (cuboctahedron)">
+      <img id="merkabah" src="images/merkabah.png" alt="Merkabah (star tetrahedron) within a Vector Equilibrium (cuboctahedron)">
       <div class="tooltip">
         The Merkabah (star tetrahedron) enclosed in the Vector Equilibrium symbolizes perfect balance and harmony.
       </div>
@@ -157,14 +157,22 @@
       const fileInput = document.getElementById('file-input');
       formData.append('file', fileInput.files[0]);
 
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData
-      });
-
-      const result = await response.json();
-      const uploadedImageUrl = `/uploads/${result.filename}`;
-      document.getElementById('uploaded-image').src = uploadedImageUrl;
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        if (response.ok) {
+          const uploadedImageUrl = `/uploads/${result.filename}`;
+          document.getElementById('uploaded-image').src = uploadedImageUrl;
+        } else {
+          console.error('Upload failed:', result.message);
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+      }
     });
   </script>
 </body>
