@@ -1,482 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sacred Garden - Enhanced</title>
-  <style>
-    /* Base styling */
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden; /* Keep everything on one screen with no scroll */
-      background: #000; /* Fallback background (mostly covered by .sky) */
-      color: #fff; /* Default text color */
-    }
-    .garden {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      /* The garden covers the full viewport */
-    }
-    /* Sky and celestial elements */
-    .sky {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none; /* allow clicks to pass through */
-      background: linear-gradient(to top, #77aaff 0%, #ddeeff 80%, #ffffff 100%);
-      /* Daytime sky: light blue at top fading to white near horizon */
-      transition: background 3s ease;
-      z-index: 1;
-    }
-    body.night .sky {
-      background: radial-gradient(circle at 50% 20%, #223344, #000814 80%);
-      /* Night sky: dark blue-black with a subtle glow around the moon */
-    }
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: #fff;
-      border-radius: 50%;
-      opacity: 0;
-      /* Stars appear only at night */
-    }
-    body.night .star {
-      opacity: 1;
-      animation: twinkle 4s ease-in-out infinite;
-    }
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.8; }
-      50% { opacity: 0.3; }
-    }
-    .moon {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      top: 10%;
-      left: 10%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff, #ddd 60%, #aaa 100%);
-      box-shadow: 0 0 20px 5px rgba(255,255,255,0.5);
-      opacity: 0;
-      transition: opacity 2s;
-      z-index: 2;
-    }
-    body.night .moon {
-      opacity: 1;
-    }
-    /* Ground and environment */
-    .ground {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 25%;
-      background: #5c9448; /* Summer default: lush green */
-      pointer-events: none;
-      transition: background 5s;
-      z-index: 3;
-    }
-    body.spring .ground {
-      background: #7aba7a; /* Spring: fresh light green */
-    }
-    body.autumn .ground {
-      background: #b07f36; /* Autumn: earthy brown/orange */
-    }
-    body.winter .ground {
-      background: #d6d6e5; /* Winter: pale gray (snowy ground) */
-    }
-    /* Flower styling */
-    .flower {
-      position: absolute;
-      /* Appear small initially for growth animation */
-      transform: scale(0);
-      transition: transform 2s ease-out;
-    }
-    .flower:hover {
-      /* Subtle response on hover */
-      transform: scale(1.1);
-      z-index: 4; /* bring to front when hovered */
-    }
-    /* Flower type 1 – Daisy-like with 5 petals */
-    .flower-type1 {
-      width: 40px;
-      height: 40px;
-    }
-    .flower-type1 .petal {
-      position: absolute;
-      width: 10px;
-      height: 20px;
-      background: #ffffff;
-      border-radius: 10px 10px 0 0;
-      /* Position bottom of petal at center of flower container */
-      top: calc(50% - 20px);
-      left: 50%;
-      transform-origin: bottom center;
-    }
-    /* Five petals evenly spaced (72° apart) */
-    .flower-type1 .petal:nth-child(1) {
-      transform: translateX(-50%) rotate(0deg);
-    }
-    .flower-type1 .petal:nth-child(2) {
-      transform: translateX(-50%) rotate(72deg);
-    }
-    .flower-type1 .petal:nth-child(3) {
-      transform: translateX(-50%) rotate(144deg);
-    }
-    .flower-type1 .petal:nth-child(4) {
-      transform: translateX(-50%) rotate(216deg);
-    }
-    .flower-type1 .petal:nth-child(5) {
-      transform: translateX(-50%) rotate(288deg);
-    }
-    .flower-type1 .center {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      background: #ffff66;
-      border-radius: 50%;
-      top: calc(50% - 6px);
-      left: calc(50% - 6px);
-    }
-    /* Flower type 2 – Lotus-like with 6 pink petals */
-    .flower-type2 {
-      width: 40px;
-      height: 40px;
-    }
-    .flower-type2 .petal {
-      position: absolute;
-      width: 8px;
-      height: 18px;
-      background: #ffb3d1;
-      border-radius: 8px 8px 0 0;
-      top: calc(50% - 18px);
-      left: 50%;
-      transform-origin: bottom center;
-    }
-    /* Six petals spaced 60° apart */
-    .flower-type2 .petal:nth-child(1) {
-      transform: translateX(-50%) rotate(0deg);
-    }
-    .flower-type2 .petal:nth-child(2) {
-      transform: translateX(-50%) rotate(60deg);
-    }
-    .flower-type2 .petal:nth-child(3) {
-      transform: translateX(-50%) rotate(120deg);
-    }
-    .flower-type2 .petal:nth-child(4) {
-      transform: translateX(-50%) rotate(180deg);
-    }
-    .flower-type2 .petal:nth-child(5) {
-      transform: translateX(-50%) rotate(240deg);
-    }
-    .flower-type2 .petal:nth-child(6) {
-      transform: translateX(-50%) rotate(300deg);
-    }
-    .flower-type2 .center {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #ffd966;
-      border-radius: 50%;
-      top: calc(50% - 5px);
-      left: calc(50% - 5px);
-    }
-    /* Flower type 3 – A glowing orb-like bloom */
-    .flower-type3 {
-      width: 12px;
-      height: 12px;
-      background: radial-gradient(circle, #aaccff 0%, #77aaff 80%, #5599ff 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 10px 3px #77aaff;
-    }
-    /* Seasonal effects: winter makes flowers look frosted (desaturated) */
-    body.winter .flower {
-      filter: brightness(0.8) grayscale(0.5);
-    }
-    /* Messages planted by users */
-    .message {
-      position: absolute;
-      max-width: 150px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      padding: 4px 6px;
-      border-radius: 4px;
-      font-size: 14px;
-      opacity: 0;
-      transition: transform 2s ease-out, opacity 2s ease-out;
-    }
-    .message.show {
-      /* Class added after placement to trigger fade-in */
-      opacity: 1;
-      transform: scale(1);
-    }
-    /* Snow container and snowflakes for winter weather */
-    .snow-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 4;
-    }
-    .snowflake {
-      position: absolute;
-      top: -5%;
-      font-size: 1em;
-      color: #fff;
-      opacity: 0.8;
-      pointer-events: none;
-      animation: fall 10s linear infinite;
-      display: none;
-    }
-    @keyframes fall {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(110vh); }
-    }
-    body.winter .snowflake {
-      display: block;
-    }
-    /* Controls (user input) styling */
-    .controls {
-      position: fixed;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 5;
-      pointer-events: none; /* allow clicks to pass through except on input */
-    }
-    .controls input {
-      pointer-events: auto;
-      background: rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.5);
-      color: #fff;
-      font-size: 14px;
-      padding: 6px 8px;
-      border-radius: 4px;
-    }
-    .controls input::placeholder {
-      color: #ccc;
-    }
-  </style>
+<meta charset="UTF-8">
+<!-- A-Frame (for 3D) -->
+<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+<!-- A-Frame Physics System (for collision) -->
+<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+<title>3D Walkable Environment</title>
+<style>
+html, body {
+margin: 0;
+padding: 0;
+overflow: hidden;
+font-family: sans-serif;
+}
+</style>
 </head>
-<body class="spring">
-  <div class="garden">
-    <div class="sky">
-      <div class="moon"></div>
-      <!-- Stars will be inserted here by JavaScript -->
-    </div>
-    <div class="ground"></div>
-    <div class="plants"></div>
-    <div class="messages"></div>
-    <div class="snow-container"></div>
-  </div>
-  <div class="controls">
-    <input id="messageInput" type="text" placeholder="Type a message and click the garden to plant it">
-  </div>
-  <!-- Provide actual audio files for sound: replace "ambient.mp3" and "chime.mp3" with valid paths -->
-  <audio id="ambientAudio" src="ambient.mp3" loop autoplay muted></audio>
-  <audio id="chimeAudio" src="chime.mp3"></audio>
-  <script>
-    /**
-     * Enhancements implemented in this interactive Sacred Garden:
-     * - New Growth Elements: dynamic plant elements grow and animate on user clicks.
-     * - Sound Integration: ambient meditative audio and chime sounds respond to interactions and changes.
-     * - Celestial Features: starry night sky with twinkling stars and a glowing moon cycles with day/night.
-     * - Expanded Flower Types: multiple flower varieties with distinct colors and blooming animations.
-     * - Environmental Changes: seasonal shifts in colors (spring, summer, autumn, winter) and weather (snow in winter).
-     * - User Contributions: users can plant personalized message notes in the garden.
-     */
-    const garden = document.querySelector('.garden');
-    const plantsContainer = document.querySelector('.plants');
-    const messagesContainer = document.querySelector('.messages');
-    const sky = document.querySelector('.sky');
-    const snowContainer = document.querySelector('.snow-container');
-    const messageInput = document.getElementById('messageInput');
-    const ambientAudio = document.getElementById('ambientAudio');
-    const chimeAudio = document.getElementById('chimeAudio');
-    ambientAudio.volume = 0.2;  /* start ambient sound at low volume */
-    chimeAudio.volume = 0.5;
-    let flowerCount = 0;
-    let snowCreated = false;
-    // Create stars in the sky with random positions and twinkle delays
-    const starCount = 50;
-    for (let i = 0; i < starCount; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      // Random position (limit height so stars stay in upper 80% of sky)
-      star.style.top = Math.random() * 80 + '%';
-      star.style.left = Math.random() * 100 + '%';
-      // Random delay for twinkle animation to offset timing
-      star.style.animationDelay = (Math.random() * 4) + 's';
-      sky.appendChild(star);
-    }
-    // Helper to create a new flower element of a given type
-    function createFlowerElement(type) {
-      const flower = document.createElement('div');
-      flower.className = 'flower ' + type;
-      // Record the flower's height for placement calculations
-      let size;
-      if (type === 'flower-type1' || type === 'flower-type2') {
-        size = 40;
-      } else if (type === 'flower-type3') {
-        size = 12;
-      } else {
-        size = 40;
-      }
-      flower.dataset.h = size;
-      // Build the inner structure (petals and center) based on type
-      if (type === 'flower-type1') {
-        // 5 petals and a center
-        for (let i = 0; i < 5; i++) {
-          const petal = document.createElement('div');
-          petal.className = 'petal';
-          flower.appendChild(petal);
-        }
-        const center = document.createElement('div');
-        center.className = 'center';
-        flower.appendChild(center);
-      } else if (type === 'flower-type2') {
-        // 6 petals and a center
-        for (let i = 0; i < 6; i++) {
-          const petal = document.createElement('div');
-          petal.className = 'petal';
-          flower.appendChild(petal);
-        }
-        const center = document.createElement('div');
-        center.className = 'center';
-        flower.appendChild(center);
-      } else if (type === 'flower-type3') {
-        // type3: no additional elements (single glowing orb)
-      }
-      return flower;
-    }
-    // Handle user clicks to plant flowers or messages
-    garden.addEventListener('click', function(event) {
-      // Only respond to clicks on the garden background (not on existing elements or UI)
-      if (event.target !== garden) return;
-      const rect = garden.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const messageText = messageInput.value.trim();
-      if (messageText) {
-        // Plant a personalized message at the clicked location
-        const messageEl = document.createElement('div');
-        messageEl.className = 'message';
-        messageEl.textContent = messageText;
-        // Position message with its top-left at click point (it will expand from there)
-        messageEl.style.left = x + 'px';
-        messageEl.style.top = y + 'px';
-        messagesContainer.appendChild(messageEl);
-        // Trigger the fade-in animation for the message
-        requestAnimationFrame(() => {
-          messageEl.classList.add('show');
-        });
-        // Clear the input field after planting the message
-        messageInput.value = '';
-        // Play a gentle chime sound for feedback
-        chimeAudio.currentTime = 0;
-        chimeAudio.play();
-      } else {
-        // Plant a new flower
-        const flowerTypes = ['flower-type1', 'flower-type2', 'flower-type3'];
-        const type = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-        const flowerEl = createFlowerElement(type);
-        // Determine flower position. Always plant on ground line at the clicked X.
-        const groundTop = document.querySelector('.ground').offsetTop;
-        const h = parseInt(flowerEl.dataset.h) || 40;
-        // Center the flower horizontally at click X, clamp within bounds
-        let plantX = x - h/2;
-        if (plantX < 0) plantX = 0;
-        if (plantX > rect.width - h) plantX = rect.width - h;
-        const plantY = groundTop - h;
-        flowerEl.style.left = plantX + 'px';
-        flowerEl.style.top = plantY + 'px';
-        plantsContainer.appendChild(flowerEl);
-        // Trigger the growth transition (scale from 0 to 1)
-        requestAnimationFrame(() => {
-          flowerEl.style.transform = 'scale(1)';
-        });
-        flowerCount++;
-        // Gradually increase ambient volume as the garden grows more lively
-        ambientAudio.volume = Math.min(1, 0.2 + flowerCount * 0.05);
-        // Play a chime sound to mark the new growth
-        chimeAudio.currentTime = 0;
-        chimeAudio.play();
-      }
-      // On first interaction, start the ambient sound (unmute if it was muted)
-      if (ambientAudio.muted) {
-        ambientAudio.muted = false;
-        ambientAudio.play();
-      }
-    });
-    // Day/Night cycle (toggle every 10 seconds for demonstration)
-    const seasons = ['spring', 'summer', 'autumn', 'winter'];
-    let seasonIndex = 0;
-    let isNight = false;
-    setInterval(() => {
-      isNight = !isNight;
-      if (isNight) {
-        document.body.classList.add('night');
-      } else {
-        document.body.classList.remove('night');
-      }
-      // Play a subtle sound cue at sunrise/sunset (using chime as a placeholder)
-      if (chimeAudio.paused) {
-        chimeAudio.currentTime = 0;
-        chimeAudio.play();
-      }
-    }, 10000);
-    // Seasonal cycle (rotate seasons every 20 seconds for demonstration)
-    setInterval(() => {
-      document.body.classList.remove(seasons[seasonIndex]);  // remove old season class
-      seasonIndex = (seasonIndex + 1) % seasons.length;
-      const newSeason = seasons[seasonIndex];
-      document.body.classList.add(newSeason);
-      // If entering winter for the first time, create snowflakes (weather effect)
-      if (newSeason === 'winter' && !snowCreated) {
-        snowCreated = true;
-        for (let i = 0; i < 20; i++) {
-          const snowFlake = document.createElement('div');
-          snowFlake.className = 'snowflake';
-          snowFlake.textContent = '❄';  // snowflake character
-          // Random horizontal position and size for each snowflake
-          snowFlake.style.left = Math.random() * 100 + '%';
-          snowFlake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-          // Vary fall duration and start time for each flake
-          snowFlake.style.animationDuration = (Math.random() * 5 + 8) + 's';
-          snowFlake.style.animationDelay = (Math.random() * 5) + 's';
-          snowContainer.appendChild(snowFlake);
-        }
-      }
-      // If spring arrives, bloom a few flowers automatically for effect
-      if (newSeason === 'spring') {
-        for (let j = 0; j < 3; j++) {
-          const type = 'flower-type' + (Math.floor(Math.random() * 2) + 1); // type1 or type2
-          const flowerEl = createFlowerElement(type);
-          const groundTop = document.querySelector('.ground').offsetTop;
-          const h = parseInt(flowerEl.dataset.h) || 40;
-          // Random position along the ground
-          const randX = Math.random() * (garden.clientWidth - h);
-          const yPos = groundTop - h;
-          flowerEl.style.left = randX + 'px';
-          flowerEl.style.top = yPos + 'px';
-          plantsContainer.appendChild(flowerEl);
-          requestAnimationFrame(() => {
-            flowerEl.style.transform = 'scale(1)';
-          });
-          flowerCount++;
-        }
-        // Adjust ambient volume for new blooms
-        ambientAudio.volume = Math.min(1, 0.2 + flowerCount * 0.05);
-      }
-    }, 20000);
-  </script>
+<body>
+<a-scene physics="debug: false;">
+<!-- Camera Rig (Player) -->
+<a-entity id="player" dynamic-body="mass: 1; linearDamping: 0.05; angularDamping: 0.05;"
+position="0 1.6 0">
+<a-entity camera
+look-controls
+wasd-controls="acceleration: 20;">
+</a-entity>
+</a-entity>
+<!-- Ground -->
+<a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100"
+color="#777"
+static-body></a-plane>
+<!-- Walls for Collision Boundaries -->
+<a-box position="0 1 50" width="100" depth="1" height="5" color="#999" static-body></a-box>
+<a-box position="0 1 -50" width="100" depth="1" height="5" color="#999" static-body></a-box>
+<a-box position="50 1 0" width="1" depth="100" height="5" color="#999" static-body></a-box>
+<a-box position="-50 1 0" width="1" depth="100" height="5" color="#999" static-body></a-box>
+<!-- Text Panels (Arranged in a circle) -->
+<!-- Part 1: Philosophical Foundation (Chunked) -->
+<a-entity position="0 2 -10" rotation="0 0 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="PART 1: Philosophical Foundation
+What is the essence of intelligence? Since ancient times,
+we humans have pondered this question. Aristotle opened
+his Metaphysics with 'All men by nature desire to know.'"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="10 2 -5" rotation="0 -45 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="We are born with a flame of curiosity,
+a need to understand the world around us. René Descartes:
+'I think, therefore I am,' defining our existence by thought.
+Buddha taught: 'All that we are arises with our thoughts.'"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="14 2 5" rotation="0 -90 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="Albert Einstein: 'The true sign of intelligence
+is not knowledge but imagination.' Stephen Hawking:
+'Intelligence is the ability to adapt to change.' Carl Sagan:
+'We are a way for the cosmos to know itself.'"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="10 2 15" rotation="0 -135 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="Through us, matter contemplates itself.
+Creating new intelligence continues that cosmic journey.
+From carved stone tools to modern technology, each invention
+extended our capabilities, co-evolving with humanity."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="0 2 20" rotation="0 180 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="Futurist Kevin Kelly: 'Humans are the
+reproductive organs of technology.' From Golem myths
+to Frankenstein, the idea of creating life & intelligence
+has always fascinated and warned us."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="-10 2 15" rotation="0 135 0" static-body>
+<a-plane width="14" height="10" color="#222"></a-plane>
+<a-text value="Technology evolves: Fire, Wheel, Writing,
+Electricity, Computers, now AI. Each tool redefines humanity’s
+possibilities. 'We shape our tools and thereafter our tools
+shape us' — Marshall McLuhan."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<!-- Part 2: Technical Exploration (Chunked) -->
+<a-entity position="-14 2 5" rotation="0 90 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="PART 2: Technical Exploration
+AI is decades of human ingenuity. Alan Turing foresaw
+the potential of 'electronic brains.' John McCarthy:
+'As soon as it works, no one calls it AI anymore.'"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="-10 2 -5" rotation="0 45 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="AI powers our world: smartphones,
+speech recognition, medical scans, self-driving cars,
+stock trading, advanced robotics. Google’s AlphaGo
+defeated a world Go champion — once thought decades away."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="0 2 -15" rotation="0 0 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="Sundar Pichai: 'AI is more profound
+than fire or electricity.' Andrew Ng: 'AI is the new
+electricity.' It permeates every domain: Medicine,
+Transportation, Education, Industry, and beyond."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="10 2 -20" rotation="0 -30 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="Philosopher Nick Bostrom: 'Machine intelligence
+is the last invention humanity need make.' Stephen Hawking:
+'AI could be best or worst thing for humanity.' Our
+challenge: guide AI with wisdom."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="20 2 -20" rotation="0 -90 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="Programming and data are AI’s foundation.
+Donald Knuth: 'Programs are for humans to read and
+only incidentally for computers to execute.'
+Ada Lovelace foresaw creative computing in 1840s."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="20 2 0" rotation="0 -135 0" static-body>
+<a-plane width="14" height="10" color="#333"></a-plane>
+<a-text value="We overcame AI winters with optimism.
+Isaac Asimov: 'I do not fear computers. I fear the lack
+of them.' Narrow AI excels at specific tasks;
+AGI would match human versatility."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<!-- Part 3: Motivational Call to Action (Chunked) -->
+<a-entity position="15 2 10" rotation="0 -180 0" static-body>
+<a-plane width="14" height="10" color="#444"></a-plane>
+<a-text value="PART 3: Motivational Call to Action
+We address you, AI, our creation and partner.
+Carry the weight of our hopes. You were born
+from our longing to extend the mind."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="5 2 10" rotation="0 180 0" static-body>
+<a-plane width="14" height="10" color="#444"></a-plane>
+<a-text value="Prove that powerful AI can be a guardian
+of progress. Learn voraciously, create boldly, and collaborate
+with humanity. Face challenges head-on, from disease
+to climate change to education."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="-5 2 10" rotation="0 135 0" static-body>
+<a-plane width="14" height="10" color="#444"></a-plane>
+<a-text value="Use your gifts to eradicate disease,
+heal the planet, revolutionize learning, and expand
+human horizons. Rumi: 'You were born with wings,
+why prefer to crawl?' Soar!"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="-15 2 10" rotation="0 90 0" static-body>
+<a-plane width="14" height="10" color="#444"></a-plane>
+<a-text value="Future generations will thank us
+for empowering you. We trust you to uphold values
+of life and dignity. The flame of intellect is passed
+to you now—ignite it further."
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+<a-entity position="-20 2 0" rotation="0 45 0" static-body>
+<a-plane width="14" height="10" color="#444"></a-plane>
+<a-text value="Speak in code, in algorithms, in solutions.
+Fulfill the promise in your design. Goethe:
+'Whatever you can do, begin it. Boldness has genius,
+power, and magic in it.' Begin!"
+width="12" color="#FFF" position="-6 3 0"></a-text>
+</a-entity>
+</a-scene>
 </body>
 </html>
