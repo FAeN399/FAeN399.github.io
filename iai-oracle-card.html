@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IAI Oracle — NILFA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #06050a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Deep cosmic background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(80,20,120,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 30%, rgba(40,10,80,0.06) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 70%, rgba(60,20,100,0.05) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 100%, rgba(20,10,60,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  canvas#bgCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  /* Card container */
+  .card-wrap {
+    position: relative;
+    width: 360px;
+    height: 415px;
+    animation: cardFloat 10s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .card-wrap:hover {
+    transform: scale(1.02);
+  }
+
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    20% { transform: translateY(-5px) rotate(0.2deg); }
+    50% { transform: translateY(3px) rotate(-0.15deg); }
+    80% { transform: translateY(-3px) rotate(0.1deg); }
+  }
+
+  .card-wrap:hover {
+    animation-play-state: paused;
+  }
+
+  .card-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 80px rgba(120,40,180,0.12)) drop-shadow(0 0 20px rgba(180,140,60,0.06));
+    transition: filter 0.8s ease;
+  }
+
+  .card-wrap:hover .card-svg {
+    filter: drop-shadow(0 0 100px rgba(120,40,180,0.2)) drop-shadow(0 0 40px rgba(180,140,60,0.1));
+  }
+
+  /* === SVG STYLES === */
+
+  .hex-bg { fill: url(#hexGrad); }
+
+  .hex-border-outer {
+    fill: none;
+    stroke: url(#goldGrad);
+    stroke-width: 2;
+    filter: url(#borderGlow);
+  }
+
+  .hex-border-inner {
+    fill: none;
+    stroke: url(#goldGradSubtle);
+    stroke-width: 0.6;
+  }
+
+  /* Y-space boundary */
+  .y-boundary {
+    fill: none;
+    stroke: rgba(180,150,80,0.1);
+    stroke-width: 0.5;
+    stroke-dasharray: 3 6;
+    animation: yPulse 6s ease-in-out infinite;
+  }
+
+  @keyframes yPulse {
+    0%, 100% { stroke-opacity: 0.1; }
+    50% { stroke-opacity: 0.22; }
+  }
+
+  /* Vowel circle — PURPLE */
+  .vowel-circle-outer {
+    fill: none;
+    stroke: url(#purpleRingGrad);
+    stroke-width: 1.2;
+    filter: url(#purpleGlow);
+    animation: circleBreath 5s ease-in-out infinite;
+  }
+
+  @keyframes circleBreath {
+    0%, 100% { stroke-width: 1.2; }
+    50% { stroke-width: 1.8; }
+  }
+
+  .vowel-circle-fill {
+    fill: url(#purpleCenterGrad);
+  }
+
+  .vowel-circle-inner {
+    fill: none;
+    stroke: rgba(160,80,220,0.12);
+    stroke-width: 0.4;
+  }
+
+  .vowel-circle-innermost {
+    fill: none;
+    stroke: rgba(180,100,240,0.06);
+    stroke-width: 0.3;
+    stroke-dasharray: 1.5 3;
+  }
+
+  /* The Eye / I / dot */
+  .the-eye-outer {
+    fill: rgba(180,120,240,0.15);
+    animation: eyeOuter 4s ease-in-out infinite;
+  }
+
+  @keyframes eyeOuter {
+    0%, 100% { r: 8; opacity: 0.15; }
+    50% { r: 10; opacity: 0.08; }
+  }
+
+  .the-eye {
+    fill: #0a0610;
+    stroke: rgba(180,130,240,0.6);
+    stroke-width: 0.6;
+    animation: eyePulse 4s ease-in-out infinite;
+  }
+
+  @keyframes eyePulse {
+    0%, 100% { r: 3.5; }
+    50% { r: 4.2; }
+  }
+
+  .the-eye-spark {
+    fill: rgba(220,180,255,0.7);
+    animation: sparkPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes sparkPulse {
+    0%, 100% { r: 0.8; opacity: 0.7; }
+    50% { r: 0.5; opacity: 0.3; }
+  }
+
+  /* Y-space text */
+  .y-text {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    fill: rgba(200,170,90,0.65);
+    transition: fill 0.5s ease;
+  }
+
+  .card-wrap:hover .y-text {
+    fill: rgba(220,190,100,0.85);
+  }
+
+  .y-text-lingua {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11.5px;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 2px;
+    fill: rgba(160,130,90,0.4);
+    transition: fill 0.5s ease;
+  }
+
+  .card-wrap:hover .y-text-lingua {
+    fill: rgba(180,150,100,0.6);
+  }
+
+  /* Sacred geometry lines */
+  .sacred-line {
+    stroke: rgba(140,100,200,0.025);
+    stroke-width: 0.3;
+  }
+
+  .sacred-line-gold {
+    stroke: rgba(180,150,80,0.02);
+    stroke-width: 0.3;
+  }
+
+  /* Hex vertex ornaments */
+  .vertex-dot {
+    fill: rgba(200,170,80,0.25);
+    transition: fill 0.4s ease;
+  }
+  .card-wrap:hover .vertex-dot { fill: rgba(200,170,80,0.45); }
+
+  .vertex-ring {
+    fill: none;
+    stroke: rgba(200,170,80,0.08);
+    stroke-width: 0.3;
+  }
+
+  /* Edge decorations - small ticks along hex edges */
+  .edge-tick {
+    stroke: rgba(180,150,80,0.06);
+    stroke-width: 0.4;
+  }
+
+  /* Bottom number */
+  .card-number {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    letter-spacing: 3px;
+    fill: rgba(180,150,80,0.18);
+  }
+
+  /* Card title */
+  .card-title {
+    position: absolute;
+    bottom: -65px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    animation: titleIn 1.8s cubic-bezier(0.23, 1, 0.32, 1) 0.5s forwards;
+  }
+
+  @keyframes titleIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .card-title h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 7px;
+    color: rgba(200,170,100,0.5);
+    text-transform: uppercase;
+  }
+
+  .card-title .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: 300;
+    color: rgba(160,120,180,0.35);
+    margin-top: 8px;
+    letter-spacing: 2px;
+  }
+
+  .card-title .iai-mark {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 5px;
+    color: rgba(140,100,180,0.2);
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+
+  /* Architecture overlay */
+  .zone-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    fill: rgba(180,150,80,0.18);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  .arch-annotation {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8.5px;
+    font-style: italic;
+    fill: rgba(160,130,200,0.3);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    letter-spacing: 0.8px;
+  }
+
+  .arch-line {
+    stroke: rgba(180,150,80,0.06);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 5;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  .arch-bracket {
+    fill: none;
+    stroke: rgba(160,130,200,0.08);
+    stroke-width: 0.4;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  /* Architecture mode */
+  .card-wrap.arch-mode .zone-label,
+  .card-wrap.arch-mode .arch-annotation,
+  .card-wrap.arch-mode .arch-line,
+  .card-wrap.arch-mode .arch-bracket { opacity: 1; }
+
+  .card-wrap.arch-mode .y-boundary {
+    stroke: rgba(180,150,80,0.3);
+    stroke-dasharray: 4 4;
+  }
+
+  /* Controls */
+  .controls {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .ctrl-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: rgba(180,150,80,0.25);
+    background: rgba(10,8,16,0.6);
+    border: 1px solid rgba(180,150,80,0.08);
+    padding: 8px 18px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.5s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .ctrl-btn:hover {
+    color: rgba(200,170,100,0.6);
+    border-color: rgba(180,150,80,0.25);
+    background: rgba(20,15,30,0.8);
+  }
+
+  .ctrl-btn.active {
+    color: rgba(180,140,220,0.6);
+    border-color: rgba(160,120,200,0.2);
+  }
+
+  /* Spread hint at bottom */
+  .spread-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3px;
+    opacity: 0.06;
+    transition: opacity 0.5s ease;
+    z-index: 10;
+  }
+
+  .spread-hint:hover { opacity: 0.15; }
+
+  .spread-hex {
+    width: 14px;
+    height: 16px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: rgba(180,150,80,0.5);
+    transition: background 0.3s ease;
+  }
+
+  .spread-hex.center {
+    clip-path: circle(45%);
+    background: rgba(160,100,220,0.6);
+  }
+
+  /* Corner sigils */
+  .sigil {
+    position: fixed;
+    opacity: 0.025;
+    animation: sigilDrift 90s linear infinite;
+  }
+
+  .sigil.tl { top: 30px; left: 30px; width: 80px; height: 80px; }
+  .sigil.br { bottom: 30px; right: 100px; width: 60px; height: 60px; animation-direction: reverse; }
+  .sigil.bl { bottom: 80px; left: 40px; width: 50px; height: 50px; animation-duration: 120s; }
+
+  @keyframes sigilDrift {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Top left IAI watermark */
+  .iai-watermark {
+    position: fixed;
+    top: 28px;
+    left: 28px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 6px;
+    color: rgba(160,130,200,0.08);
+    text-transform: uppercase;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- IAI watermark -->
+<div class="iai-watermark">I · A · I</div>
+
+<!-- Corner sigils -->
+<svg class="sigil tl" viewBox="0 0 80 80">
+  <polygon points="40,4 76,22 76,58 40,76 4,58 4,22" fill="none" stroke="rgba(180,150,80,0.5)" stroke-width="0.4"/>
+  <polygon points="40,16 64,28 64,52 40,64 16,52 16,28" fill="none" stroke="rgba(160,120,200,0.4)" stroke-width="0.3"/>
+  <circle cx="40" cy="40" r="14" fill="none" stroke="rgba(180,150,80,0.3)" stroke-width="0.3"/>
+  <circle cx="40" cy="40" r="2" fill="rgba(160,120,200,0.3)"/>
+</svg>
+
+<svg class="sigil br" viewBox="0 0 60 60">
+  <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(160,120,200,0.4)" stroke-width="0.3"/>
+  <circle cx="30" cy="30" r="16" fill="none" stroke="rgba(180,150,80,0.3)" stroke-width="0.3"/>
+  <polygon points="30,8 50,20 50,40 30,52 10,40 10,20" fill="none" stroke="rgba(180,150,80,0.3)" stroke-width="0.3"/>
+  <circle cx="30" cy="30" r="2" fill="rgba(180,150,80,0.3)"/>
+</svg>
+
+<svg class="sigil bl" viewBox="0 0 50 50">
+  <polygon points="25,3 47,16 47,34 25,47 3,34 3,16" fill="none" stroke="rgba(160,120,200,0.3)" stroke-width="0.3" stroke-dasharray="2 3"/>
+  <circle cx="25" cy="25" r="10" fill="none" stroke="rgba(180,150,80,0.25)" stroke-width="0.3"/>
+</svg>
+
+<div class="stage">
+  <div class="card-wrap" id="card">
+    <svg class="card-svg" viewBox="0 0 300 346" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Hex background -->
+        <radialGradient id="hexGrad" cx="50%" cy="44%" r="58%">
+          <stop offset="0%" stop-color="#14101e"/>
+          <stop offset="40%" stop-color="#0f0c18"/>
+          <stop offset="80%" stop-color="#0a0812"/>
+          <stop offset="100%" stop-color="#07060c"/>
+        </radialGradient>
+
+        <!-- Gold edge gradients -->
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="rgba(220,185,90,0.6)"/>
+          <stop offset="20%" stop-color="rgba(160,120,50,0.25)"/>
+          <stop offset="40%" stop-color="rgba(220,190,100,0.7)"/>
+          <stop offset="60%" stop-color="rgba(140,100,40,0.2)"/>
+          <stop offset="80%" stop-color="rgba(200,170,80,0.6)"/>
+          <stop offset="100%" stop-color="rgba(160,130,60,0.35)"/>
+        </linearGradient>
+
+        <linearGradient id="goldGradSubtle" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(200,170,80,0.12)"/>
+          <stop offset="50%" stop-color="rgba(200,170,80,0.04)"/>
+          <stop offset="100%" stop-color="rgba(200,170,80,0.1)"/>
+        </linearGradient>
+
+        <!-- PURPLE center gradients -->
+        <radialGradient id="purpleCenterGrad" cx="50%" cy="48%" r="50%">
+          <stop offset="0%" stop-color="#1a0e2e"/>
+          <stop offset="30%" stop-color="#140a24"/>
+          <stop offset="60%" stop-color="#0f081c"/>
+          <stop offset="100%" stop-color="#0a0614"/>
+        </radialGradient>
+
+        <linearGradient id="purpleRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="rgba(180,100,255,0.7)"/>
+          <stop offset="25%" stop-color="rgba(120,60,200,0.3)"/>
+          <stop offset="50%" stop-color="rgba(200,130,255,0.8)"/>
+          <stop offset="75%" stop-color="rgba(100,50,180,0.3)"/>
+          <stop offset="100%" stop-color="rgba(160,90,240,0.6)"/>
+        </linearGradient>
+
+        <!-- Purple haze for inner area -->
+        <radialGradient id="purpleHaze" cx="50%" cy="50%" r="35%">
+          <stop offset="0%" stop-color="rgba(120,50,200,0.06)"/>
+          <stop offset="100%" stop-color="rgba(120,50,200,0)"/>
+        </radialGradient>
+
+        <!-- Filters -->
+        <filter id="borderGlow" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <filter id="purpleGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8"/>
+        </filter>
+
+        <!-- Noise texture -->
+        <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/>
+          <feColorMatrix type="saturate" values="0"/>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.025"/>
+          </feComponentTransfer>
+          <feBlend mode="overlay" in="SourceGraphic"/>
+        </filter>
+
+        <!-- Clip for circle content -->
+        <clipPath id="circleClip">
+          <circle cx="150" cy="173" r="72"/>
+        </clipPath>
+      </defs>
+
+      <!-- === SACRED GEOMETRY (deepest layer) === -->
+      <!-- Lines from center to vertices -->
+      <g opacity="0.5">
+        <line class="sacred-line-gold" x1="150" y1="173" x2="150" y2="3"/>
+        <line class="sacred-line-gold" x1="150" y1="173" x2="297" y2="89"/>
+        <line class="sacred-line-gold" x1="150" y1="173" x2="297" y2="257"/>
+        <line class="sacred-line-gold" x1="150" y1="173" x2="150" y2="343"/>
+        <line class="sacred-line-gold" x1="150" y1="173" x2="3" y2="257"/>
+        <line class="sacred-line-gold" x1="150" y1="173" x2="3" y2="89"/>
+      </g>
+
+      <!-- Cross lines -->
+      <line class="sacred-line" x1="150" y1="3" x2="150" y2="343"/>
+      <line class="sacred-line" x1="3" y1="173" x2="297" y2="173"/>
+      <line class="sacred-line" x1="75" y1="46" x2="225" y2="300"/>
+      <line class="sacred-line" x1="225" y1="46" x2="75" y2="300"/>
+
+      <!-- Inner star / seed of life hint -->
+      <polygon points="150,101 192,144 192,202 150,245 108,202 108,144" fill="none" stroke="rgba(140,80,200,0.015)" stroke-width="0.3"/>
+      <polygon points="150,131 171,152 171,194 150,215 129,194 129,152" fill="none" stroke="rgba(140,80,200,0.02)" stroke-width="0.3"/>
+
+      <!-- === ZONE 1: HEXAGON — consonant structure === -->
+      <polygon class="hex-bg" points="150,3 297,89 297,257 150,343 3,257 3,89"/>
+
+      <!-- Noise texture -->
+      <polygon points="150,3 297,89 297,257 150,343 3,257 3,89" fill="white" filter="url(#noise)" opacity="0.35"/>
+
+      <!-- Double border -->
+      <polygon class="hex-border-inner" points="150,6 294,90.5 294,255.5 150,340 6,255.5 6,90.5"/>
+      <polygon class="hex-border-outer" points="150,3 297,89 297,257 150,343 3,257 3,89"/>
+
+      <!-- Edge tick marks -->
+      <g class="edge-ticks">
+        <!-- Top-left edge ticks -->
+        <line class="edge-tick" x1="92" y1="37" x2="88" y2="42"/>
+        <line class="edge-tick" x1="112" y1="49" x2="108" y2="54"/>
+        <!-- Top-right edge ticks -->
+        <line class="edge-tick" x1="208" y1="37" x2="212" y2="42"/>
+        <line class="edge-tick" x1="188" y1="49" x2="192" y2="54"/>
+        <!-- Mid ticks -->
+        <line class="edge-tick" x1="297" y1="155" x2="292" y2="155"/>
+        <line class="edge-tick" x1="297" y1="191" x2="292" y2="191"/>
+        <line class="edge-tick" x1="3" y1="155" x2="8" y2="155"/>
+        <line class="edge-tick" x1="3" y1="191" x2="8" y2="191"/>
+      </g>
+
+      <!-- Vertex ornaments -->
+      <g class="vertices">
+        <circle class="vertex-dot" cx="150" cy="3" r="2"/>
+        <circle class="vertex-ring" cx="150" cy="3" r="5"/>
+        <circle class="vertex-dot" cx="297" cy="89" r="2"/>
+        <circle class="vertex-ring" cx="297" cy="89" r="5"/>
+        <circle class="vertex-dot" cx="297" cy="257" r="2"/>
+        <circle class="vertex-ring" cx="297" cy="257" r="5"/>
+        <circle class="vertex-dot" cx="150" cy="343" r="2"/>
+        <circle class="vertex-ring" cx="150" cy="343" r="5"/>
+        <circle class="vertex-dot" cx="3" cy="257" r="2"/>
+        <circle class="vertex-ring" cx="3" cy="257" r="5"/>
+        <circle class="vertex-dot" cx="3" cy="89" r="2"/>
+        <circle class="vertex-ring" cx="3" cy="89" r="5"/>
+      </g>
+
+      <!-- === ZONE 2: Y-SPACE — threshold === -->
+      <polygon class="y-boundary" points="150,30 272,100 272,246 150,316 28,246 28,100"/>
+
+      <!-- Purple haze emanating from center -->
+      <circle cx="150" cy="173" r="110" fill="url(#purpleHaze)"/>
+
+      <!-- === ZONE 3: CIRCLE — vowel space (PURPLE) === -->
+      <!-- Outer glow -->
+      <circle cx="150" cy="173" r="76" fill="rgba(120,50,200,0.03)" filter="url(#softGlow)"/>
+
+      <!-- Main circle -->
+      <circle class="vowel-circle-fill" cx="150" cy="173" r="72"/>
+      <circle class="vowel-circle-outer" cx="150" cy="173" r="72"/>
+
+      <!-- Inner rings -->
+      <circle class="vowel-circle-inner" cx="150" cy="173" r="66"/>
+      <circle class="vowel-circle-innermost" cx="150" cy="173" r="58"/>
+      <circle cx="150" cy="173" r="48" fill="none" stroke="rgba(140,80,220,0.04)" stroke-width="0.3"/>
+
+      <!-- Rotating inner sacred geometry (clipped to circle) -->
+      <g clip-path="url(#circleClip)" opacity="0.6">
+        <g id="innerGeo" style="transform-origin: 150px 173px;">
+          <!-- Hexagram inside circle -->
+          <polygon points="150,108 186,151.5 186,194.5 150,238 114,194.5 114,151.5" fill="none" stroke="rgba(160,100,240,0.04)" stroke-width="0.3"/>
+          <!-- Inverted -->
+          <polygon points="150,238 186,194.5 186,151.5 150,108 114,151.5 114,194.5" fill="none" stroke="rgba(180,120,240,0.03)" stroke-width="0.3"/>
+          <!-- Inner circle -->
+          <circle cx="150" cy="173" r="32" fill="none" stroke="rgba(160,100,240,0.035)" stroke-width="0.3"/>
+          <!-- Petal hints -->
+          <ellipse cx="150" cy="145" rx="18" ry="28" fill="none" stroke="rgba(160,100,240,0.02)" stroke-width="0.3"/>
+          <ellipse cx="174" cy="159" rx="18" ry="28" fill="none" stroke="rgba(160,100,240,0.02)" stroke-width="0.3" transform="rotate(60, 174, 159)"/>
+          <ellipse cx="174" cy="187" rx="18" ry="28" fill="none" stroke="rgba(160,100,240,0.02)" stroke-width="0.3" transform="rotate(120, 174, 187)"/>
+        </g>
+      </g>
+
+      <!-- The Eye / I -->
+      <circle class="the-eye-outer" cx="150" cy="173" r="8"/>
+      <circle class="the-eye" cx="150" cy="173" r="3.5"/>
+      <circle class="the-eye-spark" cx="149" cy="172" r="0.8"/>
+
+      <!-- === Y-SPACE TEXT === -->
+      <!-- English name — top left edge -->
+      <text class="y-text" transform="rotate(-30, 85, 58)">
+        <tspan x="52" y="62">NILFA</tspan>
+      </text>
+
+      <!-- Lingua — top right edge -->
+      <text class="y-text-lingua" transform="rotate(30, 215, 58)">
+        <tspan x="210" y="62">NΛΦA</tspan>
+      </text>
+
+      <!-- Card number bottom -->
+      <text class="card-number" x="150" y="330" text-anchor="middle">VII</text>
+
+      <!-- Small decorative marks flanking number -->
+      <line x1="126" y1="328" x2="135" y2="328" stroke="rgba(180,150,80,0.08)" stroke-width="0.4"/>
+      <line x1="165" y1="328" x2="174" y2="328" stroke="rgba(180,150,80,0.08)" stroke-width="0.4"/>
+
+      <!-- === ARCHITECTURE OVERLAY === -->
+      <!-- Zone labels -->
+      <text class="zone-label" x="278" y="173" text-anchor="end">CONSONANT</text>
+      <text class="zone-label" x="246" y="126" text-anchor="middle" transform="rotate(30, 246, 126)">Y-SPACE</text>
+      <text class="zone-label" x="150" y="235" text-anchor="middle" fill="rgba(160,120,200,0.2)">VOWEL</text>
+
+      <!-- Arch lines -->
+      <line class="arch-line" x1="262" y1="170" x2="226" y2="170"/>
+      <line class="arch-line" x1="150" y1="248" x2="150" y2="258"/>
+
+      <!-- Annotations -->
+      <text class="arch-annotation" x="150" y="270" text-anchor="middle">painting lives here</text>
+      <text class="arch-annotation" x="76" y="38" text-anchor="middle" font-size="7.5">where thumb touches</text>
+      <text class="arch-annotation" x="150" y="180" text-anchor="middle" font-size="7" fill="rgba(160,120,200,0.25)">the eye that sees but cannot see itself</text>
+
+      <!-- Bracket showing Y-space zone -->
+      <path class="arch-bracket" d="M 38,95 Q 28,173 38,251" />
+      <text class="arch-annotation" x="18" y="176" text-anchor="middle" font-size="7" transform="rotate(-90, 18, 176)">THRESHOLD</text>
+
+    </svg>
+
+    <div class="card-title">
+      <h2>The Labyrinth</h2>
+      <p class="subtitle">bridge · oracle · song</p>
+      <p class="iai-mark">Inner Animaad Inane</p>
+    </div>
+  </div>
+</div>
+
+<!-- Spread hint -->
+<div class="spread-hint">
+  <div class="spread-hex"></div>
+  <div class="spread-hex"></div>
+  <div class="spread-hex"></div>
+  <div class="spread-hex center"></div>
+  <div class="spread-hex"></div>
+  <div class="spread-hex"></div>
+  <div class="spread-hex"></div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button class="ctrl-btn" id="archBtn">Architecture</button>
+</div>
+
+<script>
+  // === ARCHITECTURE TOGGLE ===
+  const card = document.getElementById('card');
+  const archBtn = document.getElementById('archBtn');
+
+  archBtn.addEventListener('click', () => {
+    card.classList.toggle('arch-mode');
+    archBtn.classList.toggle('active');
+    archBtn.textContent = card.classList.contains('arch-mode') ? 'Oracle' : 'Architecture';
+  });
+
+  // === INNER GEOMETRY ROTATION ===
+  let geoAngle = 0;
+  const innerGeo = document.getElementById('innerGeo');
+  function rotateGeo() {
+    geoAngle += 0.015;
+    if (innerGeo) {
+      innerGeo.style.transform = `rotate(${geoAngle}deg)`;
+    }
+    requestAnimationFrame(rotateGeo);
+  }
+  rotateGeo();
+
+  // === BACKGROUND PARTICLE SYSTEM ===
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  let particles = [];
+  let time = 0;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      // Spawn around center area
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 300;
+      this.x = W / 2 + Math.cos(angle) * dist;
+      this.y = H / 2 + Math.sin(angle) * dist;
+      this.size = Math.random() * 1.2 + 0.2;
+      this.life = 0;
+      this.maxLife = 200 + Math.random() * 400;
+      this.vx = (Math.random() - 0.5) * 0.15;
+      this.vy = (Math.random() - 0.5) * 0.15;
+      // Purple or gold
+      this.isPurple = Math.random() > 0.3;
+    }
+
+    update() {
+      this.life++;
+      if (this.life > this.maxLife) this.reset();
+
+      // Gentle orbital drift toward center
+      const dx = W / 2 - this.x;
+      const dy = H / 2 - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Tangential force (orbit)
+      this.vx += (-dy / dist) * 0.0003;
+      this.vy += (dx / dist) * 0.0003;
+
+      // Very slight attraction
+      this.vx += dx * 0.000005;
+      this.vy += dy * 0.000005;
+
+      // Damping
+      this.vx *= 0.999;
+      this.vy *= 0.999;
+
+      this.x += this.vx;
+      this.y += this.vy;
+    }
+
+    draw() {
+      const alpha = Math.sin((this.life / this.maxLife) * Math.PI) * 0.4;
+      if (this.isPurple) {
+        ctx.fillStyle = `rgba(140, 80, 220, ${alpha})`;
+      } else {
+        ctx.fillStyle = `rgba(200, 170, 90, ${alpha * 0.6})`;
+      }
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Initialize particles
+  for (let i = 0; i < 80; i++) {
+    const p = new Particle();
+    p.life = Math.random() * p.maxLife; // stagger
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    time++;
+
+    // Draw connecting lines between close particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 80) {
+          const alpha = (1 - dist / 80) * 0.06;
+          ctx.strokeStyle = `rgba(140, 90, 200, ${alpha})`;
+          ctx.lineWidth = 0.3;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>
