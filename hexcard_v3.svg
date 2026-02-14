@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 346" width="300" height="346">
+  <!-- Hexagonal card boundary -->
+  <polygon 
+    points="150,3 297,89 297,257 150,343 3,257 3,89" 
+    fill="none" 
+    stroke="#1a1a1a" 
+    stroke-width="2"
+  />
+  
+  <!-- English name - top left edge -->
+  <text 
+    x="65" 
+    y="76" 
+    font-family="serif" 
+    font-size="14" 
+    fill="#1a1a1a"
+    transform="rotate(-30.3, 65, 76)"
+  >[English]</text>
+  
+  <!-- Secondary language - top right edge -->
+  <text 
+    x="205" 
+    y="48" 
+    font-family="serif" 
+    font-size="12" 
+    font-style="italic"
+    fill="#1a1a1a" 
+    transform="rotate(30.3, 205, 48)"
+  >[Lingua]</text>
+  
+  <!-- Inner circle - the vowel space -->
+  <circle 
+    cx="150" 
+    cy="173" 
+    r="72" 
+    fill="none" 
+    stroke="#1a1a1a" 
+    stroke-width="1"
+  />
+  
+  <!-- Center point - the eye/I -->
+  <circle 
+    cx="150" 
+    cy="173" 
+    r="4" 
+    fill="#1a1a1a"
+  />
+</svg>
