@@ -13,8 +13,8 @@
       min-height: 100vh;
     }
 
-    /* ── Editor Mode ── */
-    .editor-wrap {
+    /* ── Layout ── */
+    .wrap {
       max-width: 900px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
@@ -32,91 +32,62 @@
       font-size: 0.85rem;
       margin-bottom: 1.5rem;
     }
-    textarea {
-      width: 100%;
-      height: 55vh;
-      background: #0e0e16;
+
+    /* ── Token Setup ── */
+    .token-bar {
+      background: #12121a;
       border: 1px solid #1e1e30;
       border-radius: 8px;
-      color: #d4d4d4;
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
       font-size: 0.85rem;
-      padding: 1rem;
-      resize: vertical;
-      outline: none;
-      tab-size: 2;
-      line-height: 1.5;
     }
-    textarea:focus { border-color: #c8a96e; }
-    textarea::placeholder { color: #333; }
-
-    .actions {
+    .token-bar.connected {
+      border-color: #2a4a2a;
+      background: #0e1510;
+    }
+    .token-bar summary {
+      cursor: pointer;
+      color: #888;
+      list-style: none;
       display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .token-bar summary::-webkit-details-marker { display: none; }
+    .token-bar summary .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e07a5f;
+      flex-shrink: 0;
+    }
+    .token-bar.connected summary .dot { background: #6ecf6e; }
+    .token-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
       align-items: center;
     }
-    button {
-      padding: 0.6rem 1.4rem;
+    .token-row input {
+      flex: 1;
+      padding: 0.5rem 0.8rem;
+      background: #0a0a0f;
       border: 1px solid #1e1e30;
-      border-radius: 6px;
-      background: #12121a;
-      color: #e0e0e0;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      font-family: inherit;
-    }
-    button:hover { border-color: #c8a96e; color: #c8a96e; }
-    button.primary {
-      background: #c8a96e;
-      color: #0a0a0f;
-      border-color: #c8a96e;
-      font-weight: 600;
-    }
-    button.primary:hover { background: #d4b97a; }
-
-    .link-output {
-      margin-top: 1rem;
-      display: none;
-    }
-    .link-output.show { display: block; }
-    .link-box {
-      background: #0e0e16;
-      border: 1px solid #1e1e30;
-      border-radius: 6px;
-      padding: 0.8rem 1rem;
+      border-radius: 5px;
+      color: #d4d4d4;
       font-family: monospace;
       font-size: 0.8rem;
-      color: #c8a96e;
-      word-break: break-all;
-      line-height: 1.4;
-      cursor: pointer;
-      position: relative;
+      outline: none;
     }
-    .link-box:hover { border-color: #c8a96e; }
-    .link-box .copied {
-      position: absolute;
-      top: 50%;
-      right: 1rem;
-      transform: translateY(-50%);
-      background: #c8a96e;
-      color: #0a0a0f;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      opacity: 0;
-      transition: opacity 0.2s;
+    .token-row input:focus { border-color: #c8a96e; }
+    .token-help {
+      color: #555;
+      font-size: 0.78rem;
+      margin-top: 0.5rem;
+      line-height: 1.5;
     }
-    .link-box .copied.show { opacity: 1; }
-    .char-count {
-      color: #444;
-      font-size: 0.75rem;
-      margin-top: 0.4rem;
-    }
-    .warn { color: #e07a5f; }
+    .token-help a { color: #c8a96e; }
 
     /* ── Drop Zone ── */
     .dropzone {
@@ -140,10 +111,7 @@
       transition: color 0.2s;
     }
     .dropzone:hover .dz-icon, .dropzone.dragover .dz-icon { color: #c8a96e; }
-    .dropzone .dz-text {
-      color: #555;
-      font-size: 0.85rem;
-    }
+    .dropzone .dz-text { color: #555; font-size: 0.85rem; }
     .dropzone .dz-text strong { color: #c8a96e; }
     .dropzone input[type="file"] {
       position: absolute;
@@ -159,47 +127,133 @@
     }
     .dz-filename.show { display: block; }
 
-    /* ── Viewer Mode ── */
-    .viewer-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 36px;
-      background: #0a0a0f;
-      border-bottom: 1px solid #1e1e30;
+    /* ── Textarea ── */
+    textarea {
+      width: 100%;
+      height: 50vh;
+      background: #0e0e16;
+      border: 1px solid #1e1e30;
+      border-radius: 8px;
+      color: #d4d4d4;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem;
+      padding: 1rem;
+      resize: vertical;
+      outline: none;
+      tab-size: 2;
+      line-height: 1.5;
+    }
+    textarea:focus { border-color: #c8a96e; }
+    textarea::placeholder { color: #333; }
+
+    /* ── Buttons ── */
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      padding: 0.6rem 1.4rem;
+      border: 1px solid #1e1e30;
+      border-radius: 6px;
+      background: #12121a;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    button:hover { border-color: #c8a96e; color: #c8a96e; }
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    button:disabled:hover { border-color: #1e1e30; color: #e0e0e0; }
+    button.primary {
+      background: #c8a96e;
+      color: #0a0a0f;
+      border-color: #c8a96e;
+      font-weight: 600;
+    }
+    button.primary:hover { background: #d4b97a; }
+    button.primary:disabled { background: #5a4d35; border-color: #5a4d35; }
+    button.primary:disabled:hover { background: #5a4d35; color: #0a0a0f; }
+
+    /* ── Status / Output ── */
+    .status {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+    }
+    .status.error { color: #e07a5f; }
+    .status.success { color: #6ecf6e; }
+    .status.working { color: #c8a96e; }
+
+    .link-output {
+      margin-top: 0.8rem;
+      display: none;
+    }
+    .link-output.show { display: block; }
+    .link-box {
+      background: #0e0e16;
+      border: 1px solid #1e1e30;
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #c8a96e;
+      word-break: break-all;
+      line-height: 1.4;
+      cursor: pointer;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 1rem;
-      z-index: 99999;
+      gap: 1rem;
+    }
+    .link-box:hover { border-color: #c8a96e; }
+    .link-url { flex: 1; }
+    .link-box .badge {
+      background: #c8a96e;
+      color: #0a0a0f;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
       font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
     }
-    .viewer-bar a {
-      color: #c8a96e;
-      text-decoration: none;
-    }
-    .viewer-bar a:hover { text-decoration: underline; }
-    .viewer-bar span { color: #555; }
-    .viewer-frame {
-      position: fixed;
-      top: 36px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border: none;
-    }
+    .link-box .badge.show { opacity: 1; }
 
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-
-  <!-- ── EDITOR ── -->
-  <div id="editor" class="editor-wrap hidden">
+  <div class="wrap">
     <h1>Canvas Paste</h1>
-    <p class="subtitle">Paste HTML below, or upload a file. Get a shareable link. No deploy needed.</p>
+    <p class="subtitle">Paste or upload HTML. Publish to get a permanent shareable link.</p>
 
+    <!-- Token Setup -->
+    <details class="token-bar" id="tokenBar">
+      <summary>
+        <span class="dot"></span>
+        <span id="tokenStatus">Not connected — GitHub token needed to publish</span>
+      </summary>
+      <div class="token-row">
+        <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+        <button onclick="saveToken()">Save</button>
+        <button onclick="clearToken()">Clear</button>
+      </div>
+      <p class="token-help">
+        Create a <a href="https://github.com/settings/tokens?type=beta" target="_blank">fine-grained token</a>
+        with <strong>Contents: Read &amp; Write</strong> permission on <strong>FAeN399.github.io</strong> only.
+      </p>
+    </details>
+
+    <!-- Drop Zone -->
     <div class="dropzone" id="dropzone">
       <input type="file" id="fileInput" accept=".html,.htm,.txt,.svg,.xml">
       <div class="dz-icon">&#8593;</div>
@@ -207,91 +261,146 @@
       <div class="dz-filename" id="dzFilename"></div>
     </div>
 
+    <!-- Editor -->
     <textarea id="code" placeholder="Paste your HTML here..." spellcheck="false"></textarea>
+
+    <!-- Actions -->
     <div class="actions">
-      <button class="primary" onclick="generate()">Generate Link</button>
+      <button class="primary" id="publishBtn" onclick="publish()" disabled>Publish</button>
       <button onclick="preview()">Preview</button>
     </div>
-    <div class="link-output" id="linkOutput">
-      <div class="link-box" id="linkBox" onclick="copyLink()">
-        <span id="linkText"></span>
-        <span class="copied" id="copiedBadge">Copied!</span>
-      </div>
-      <p class="char-count" id="charCount"></p>
-    </div>
-  </div>
 
-  <!-- ── VIEWER ── -->
-  <div id="viewer" class="hidden">
-    <div class="viewer-bar">
-      <a href="paste.html">Canvas Paste</a>
-      <span>
-        <a href="#" id="editLink">Edit</a>
-      </span>
+    <!-- Status -->
+    <div class="status" id="status"></div>
+
+    <!-- Link Output -->
+    <div class="link-output" id="linkOutput">
+      <div class="link-box" onclick="copyLink()">
+        <span class="link-url" id="linkText"></span>
+        <span class="badge" id="copiedBadge">Copied!</span>
+      </div>
     </div>
-    <iframe id="frame" class="viewer-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
   </div>
 
   <script>
-    // ── LZ-String (MIT License) ── Minimal URL-safe compression
-    var LZString=function(){var r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",n={};function o(r,n,o){var e,t,i=[],a=4,s=4,u=3,c="",f="",h=r(0),p=0,l=0;for(e=0;3>e;e++)i[e]=e;for(t=0,e=Math.pow(2,2);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;switch(p){case 0:for(p=0,t=0,e=Math.pow(2,8);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;f=r(p);break;case 1:for(p=0,t=0,e=Math.pow(2,16);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;f=r(p);break;case 2:return""}for(i[3]=f,c=f,h=c;;){if(o()===undefined)return"";for(p=0,t=0,e=Math.pow(2,u);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;switch(f=p){case 0:for(p=0,t=0,e=Math.pow(2,8);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;i[s++]=r(p),f=s-1,a--;break;case 1:for(p=0,t=0,e=Math.pow(2,16);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;i[s++]=r(p),f=s-1,a--;break;case 2:return c}if(0==a&&(a=Math.pow(2,u),u++),i[f])f=i[f];else{if(f!==s)return null;f=h+h.charAt(0)}c+=f,i[s++]=h+f.charAt(0),h=f,0==--a&&(a=Math.pow(2,u),u++)}}return{compressToEncodedURIComponent:function(n){return null==n?"":function(n,o){if(null==n)return"";var e,t,i,a={},s={},u="",c="",f="",h=2,p=3,l=2,d=[],g=0,v=0;for(i=0;i<n.length;i++)if(u=n.charAt(i),Object.prototype.hasOwnProperty.call(a,u)||(a[u]=p++,s[u]=!0),c=f+u,Object.prototype.hasOwnProperty.call(a,c))f=c;else{if(Object.prototype.hasOwnProperty.call(s,f)){if(256>f.charCodeAt(0)){for(e=0;l>e;e++)g<<=1,6==++v&&(v=0,d.push(o(g)),g=0);for(t=f.charCodeAt(0),e=0;8>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}else{for(t=1,e=0;l>e;e++)g=g<<1|t,6==++v&&(v=0,d.push(o(g)),g=0),t=0;for(t=f.charCodeAt(0),e=0;16>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}0==--h&&(h=Math.pow(2,l),l++),delete s[f]}else for(t=a[f],e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;0==--h&&(h=Math.pow(2,l),l++),a[c]=p++,f=u}if(""!==f){if(Object.prototype.hasOwnProperty.call(s,f)){if(256>f.charCodeAt(0)){for(e=0;l>e;e++)g<<=1,6==++v&&(v=0,d.push(o(g)),g=0);for(t=f.charCodeAt(0),e=0;8>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}else{for(t=1,e=0;l>e;e++)g=g<<1|t,6==++v&&(v=0,d.push(o(g)),g=0),t=0;for(t=f.charCodeAt(0),e=0;16>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}0==--h&&(h=Math.pow(2,l),l++),delete s[f]}else for(t=a[f],e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;0==--h&&(h=Math.pow(2,l),l++)}for(t=2,e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;for(;;){if(g<<=1,6==++v){d.push(o(g));break}}return d.join("")}(n,function(n){return r.charAt(n)})},decompressFromEncodedURIComponent:function(r){return null==r?"":""==r?null:o(function(r){return String.fromCharCode(r)},64,function(){if(n.index>=n.val.length)return undefined;var o=n.val.charCodeAt(n.index);return n.index++,o>64&&91>o?o-65:(o>96&&123>o?o-97+26:(o>47&&58>o?o-48+52:("-"===String.fromCharCode(o)?62:("_"===String.fromCharCode(o)?63:undefined))))})},_n:n,_r:r}}();
-
-    // ── App Logic ──
+    // ── Config ──
+    var REPO = 'FAeN399/FAeN399.github.io';
+    var BRANCH = 'main';
+    var PATH_PREFIX = 'canvas/p/';
+    var PAGES_BASE = 'https://faen399.github.io/canvas/p/';
+    var API = 'https://api.github.com';
     var currentLink = '';
 
-    function init() {
-      var hash = location.hash.slice(1);
-      if (hash && hash.length > 0) {
-        showViewer(hash);
+    // ── Token Management ──
+    function getToken() {
+      return localStorage.getItem('canvas_gh_token') || '';
+    }
+
+    function saveToken() {
+      var t = document.getElementById('tokenInput').value.trim();
+      if (!t) return;
+      localStorage.setItem('canvas_gh_token', t);
+      document.getElementById('tokenInput').value = '';
+      updateTokenUI();
+      testToken(t);
+    }
+
+    function clearToken() {
+      localStorage.removeItem('canvas_gh_token');
+      updateTokenUI();
+    }
+
+    function updateTokenUI() {
+      var bar = document.getElementById('tokenBar');
+      var status = document.getElementById('tokenStatus');
+      var btn = document.getElementById('publishBtn');
+      if (getToken()) {
+        bar.classList.add('connected');
+        status.textContent = 'Connected to GitHub';
+        btn.disabled = false;
       } else {
-        showEditor();
+        bar.classList.remove('connected');
+        status.textContent = 'Not connected — GitHub token needed to publish';
+        btn.disabled = true;
+        bar.open = true;
       }
     }
 
-    function showEditor() {
-      document.getElementById('editor').classList.remove('hidden');
-      document.getElementById('viewer').classList.add('hidden');
-    }
-
-    function showViewer(hash) {
-      document.getElementById('editor').classList.add('hidden');
-      document.getElementById('viewer').classList.remove('hidden');
-
-      LZString._n.val = hash;
-      LZString._n.index = 0;
-      var html = LZString.decompressFromEncodedURIComponent(hash);
-
-      if (!html) {
-        document.getElementById('frame').srcdoc = '<body style="background:#0a0a0f;color:#e07a5f;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh"><p>Failed to decode. The link may be corrupted.</p></body>';
-        return;
+    async function testToken(token) {
+      try {
+        var r = await fetch(API + '/repos/' + REPO, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!r.ok) throw new Error('Token rejected');
+        setStatus('Token verified', 'success');
+      } catch (e) {
+        setStatus('Token invalid — check permissions', 'error');
+        clearToken();
       }
-
-      document.getElementById('frame').srcdoc = html;
-      document.getElementById('editLink').href = 'javascript:editFromView()';
     }
 
-    function generate() {
+    // ── Status ──
+    function setStatus(msg, type) {
+      var el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    // ── Generate Short ID ──
+    function shortId() {
+      var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      var id = '';
+      var arr = crypto.getRandomValues(new Uint8Array(7));
+      for (var i = 0; i < 7; i++) id += chars[arr[i] % chars.length];
+      return id;
+    }
+
+    // ── Publish to GitHub ──
+    async function publish() {
       var code = document.getElementById('code').value;
-      if (!code.trim()) return;
+      if (!code.trim()) { setStatus('Nothing to publish', 'error'); return; }
 
-      var compressed = LZString.compressToEncodedURIComponent(code);
-      var base = location.origin + location.pathname;
-      currentLink = base + '#' + compressed;
+      var token = getToken();
+      if (!token) { setStatus('Set up your GitHub token first', 'error'); return; }
 
-      document.getElementById('linkText').textContent = currentLink;
-      document.getElementById('linkOutput').classList.add('show');
+      var btn = document.getElementById('publishBtn');
+      btn.disabled = true;
+      setStatus('Publishing...', 'working');
 
-      var len = currentLink.length;
-      var countEl = document.getElementById('charCount');
-      countEl.textContent = len.toLocaleString() + ' chars in URL';
-      if (len > 8000) {
-        countEl.textContent += ' — very long URL, may not work in all browsers';
-        countEl.classList.add('warn');
-      } else {
-        countEl.classList.remove('warn');
+      var filename = shortId() + '.html';
+      var path = PATH_PREFIX + filename;
+
+      try {
+        var r = await fetch(API + '/repos/' + REPO + '/contents/' + path, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: 'canvas: ' + filename,
+            content: btoa(unescape(encodeURIComponent(code))),
+            branch: BRANCH
+          })
+        });
+
+        if (!r.ok) {
+          var err = await r.json();
+          throw new Error(err.message || 'Upload failed');
+        }
+
+        currentLink = PAGES_BASE + filename;
+        document.getElementById('linkText').textContent = currentLink;
+        document.getElementById('linkOutput').classList.add('show');
+        setStatus('Published! Pages deploys in ~30s.', 'success');
+      } catch (e) {
+        setStatus('Error: ' + e.message, 'error');
       }
+
+      btn.disabled = false;
     }
 
+    // ── Copy Link ──
     function copyLink() {
       navigator.clipboard.writeText(currentLink).then(function() {
         var badge = document.getElementById('copiedBadge');
@@ -300,6 +409,7 @@
       });
     }
 
+    // ── Preview ──
     function preview() {
       var code = document.getElementById('code').value;
       if (!code.trim()) return;
@@ -309,17 +419,7 @@
       w.document.close();
     }
 
-    function editFromView() {
-      var hash = location.hash.slice(1);
-      LZString._n.val = hash;
-      LZString._n.index = 0;
-      var html = LZString.decompressFromEncodedURIComponent(hash);
-      location.hash = '';
-      showEditor();
-      if (html) document.getElementById('code').value = html;
-    }
-
-    // ── File Upload Handling ──
+    // ── File Upload ──
     function handleFile(file) {
       if (!file) return;
       var reader = new FileReader();
@@ -333,51 +433,35 @@
       reader.readAsText(file);
     }
 
-    // Handle tab key in textarea
+    // ── Init ──
     document.addEventListener('DOMContentLoaded', function() {
-      init();
+      updateTokenUI();
 
-      // File input change
-      var fileInput = document.getElementById('fileInput');
-      if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-          if (e.target.files.length > 0) handleFile(e.target.files[0]);
-        });
-      }
+      // File input
+      document.getElementById('fileInput').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+      });
 
       // Drag and drop
       var dz = document.getElementById('dropzone');
-      if (dz) {
-        dz.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          dz.classList.add('dragover');
-        });
-        dz.addEventListener('dragleave', function() {
-          dz.classList.remove('dragover');
-        });
-        dz.addEventListener('drop', function(e) {
-          e.preventDefault();
-          dz.classList.remove('dragover');
-          if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-        });
-      }
+      dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
+      dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+      dz.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+      });
 
-      // Tab key in textarea
-      var ta = document.getElementById('code');
-      if (ta) {
-        ta.addEventListener('keydown', function(e) {
-          if (e.key === 'Tab') {
-            e.preventDefault();
-            var s = this.selectionStart, end = this.selectionEnd;
-            this.value = this.value.substring(0, s) + '  ' + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = s + 2;
-          }
-        });
-      }
+      // Tab key
+      document.getElementById('code').addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var s = this.selectionStart, end = this.selectionEnd;
+          this.value = this.value.substring(0, s) + '  ' + this.value.substring(end);
+          this.selectionStart = this.selectionEnd = s + 2;
+        }
+      });
     });
-
-    // React to hash changes (back/forward)
-    window.addEventListener('hashchange', init);
   </script>
 </body>
 </html>
