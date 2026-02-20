@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Paste</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    /* ── Editor Mode ── */
+    .editor-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      margin-bottom: 0.3rem;
+    }
+    .subtitle {
+      color: #555;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    textarea {
+      width: 100%;
+      height: 55vh;
+      background: #0e0e16;
+      border: 1px solid #1e1e30;
+      border-radius: 8px;
+      color: #d4d4d4;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem;
+      padding: 1rem;
+      resize: vertical;
+      outline: none;
+      tab-size: 2;
+      line-height: 1.5;
+    }
+    textarea:focus { border-color: #c8a96e; }
+    textarea::placeholder { color: #333; }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      padding: 0.6rem 1.4rem;
+      border: 1px solid #1e1e30;
+      border-radius: 6px;
+      background: #12121a;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    button:hover { border-color: #c8a96e; color: #c8a96e; }
+    button.primary {
+      background: #c8a96e;
+      color: #0a0a0f;
+      border-color: #c8a96e;
+      font-weight: 600;
+    }
+    button.primary:hover { background: #d4b97a; }
+
+    .link-output {
+      margin-top: 1rem;
+      display: none;
+    }
+    .link-output.show { display: block; }
+    .link-box {
+      background: #0e0e16;
+      border: 1px solid #1e1e30;
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #c8a96e;
+      word-break: break-all;
+      line-height: 1.4;
+      cursor: pointer;
+      position: relative;
+    }
+    .link-box:hover { border-color: #c8a96e; }
+    .link-box .copied {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      background: #c8a96e;
+      color: #0a0a0f;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .link-box .copied.show { opacity: 1; }
+    .char-count {
+      color: #444;
+      font-size: 0.75rem;
+      margin-top: 0.4rem;
+    }
+    .warn { color: #e07a5f; }
+
+    /* ── Viewer Mode ── */
+    .viewer-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 36px;
+      background: #0a0a0f;
+      border-bottom: 1px solid #1e1e30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 99999;
+      font-size: 0.75rem;
+    }
+    .viewer-bar a {
+      color: #c8a96e;
+      text-decoration: none;
+    }
+    .viewer-bar a:hover { text-decoration: underline; }
+    .viewer-bar span { color: #555; }
+    .viewer-frame {
+      position: fixed;
+      top: 36px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: none;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ── EDITOR ── -->
+  <div id="editor" class="editor-wrap hidden">
+    <h1>Canvas Paste</h1>
+    <p class="subtitle">Paste HTML below. Get a shareable link. No deploy needed.</p>
+    <textarea id="code" placeholder="Paste your HTML here..." spellcheck="false"></textarea>
+    <div class="actions">
+      <button class="primary" onclick="generate()">Generate Link</button>
+      <button onclick="preview()">Preview</button>
+    </div>
+    <div class="link-output" id="linkOutput">
+      <div class="link-box" id="linkBox" onclick="copyLink()">
+        <span id="linkText"></span>
+        <span class="copied" id="copiedBadge">Copied!</span>
+      </div>
+      <p class="char-count" id="charCount"></p>
+    </div>
+  </div>
+
+  <!-- ── VIEWER ── -->
+  <div id="viewer" class="hidden">
+    <div class="viewer-bar">
+      <a href="paste.html">Canvas Paste</a>
+      <span>
+        <a href="#" id="editLink">Edit</a>
+      </span>
+    </div>
+    <iframe id="frame" class="viewer-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+  </div>
+
+  <script>
+    // ── LZ-String (MIT License) ── Minimal URL-safe compression
+    var LZString=function(){var r="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",n={};function o(r,n,o){var e,t,i=[],a=4,s=4,u=3,c="",f="",h=r(0),p=0,l=0;for(e=0;3>e;e++)i[e]=e;for(t=0,e=Math.pow(2,2);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;switch(p){case 0:for(p=0,t=0,e=Math.pow(2,8);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;f=r(p);break;case 1:for(p=0,t=0,e=Math.pow(2,16);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;f=r(p);break;case 2:return""}for(i[3]=f,c=f,h=c;;){if(o()===undefined)return"";for(p=0,t=0,e=Math.pow(2,u);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;switch(f=p){case 0:for(p=0,t=0,e=Math.pow(2,8);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;i[s++]=r(p),f=s-1,a--;break;case 1:for(p=0,t=0,e=Math.pow(2,16);e!=t;)t=n&1,n=o(),p=(p<<1)|t,e>>=1;i[s++]=r(p),f=s-1,a--;break;case 2:return c}if(0==a&&(a=Math.pow(2,u),u++),i[f])f=i[f];else{if(f!==s)return null;f=h+h.charAt(0)}c+=f,i[s++]=h+f.charAt(0),h=f,0==--a&&(a=Math.pow(2,u),u++)}}return{compressToEncodedURIComponent:function(n){return null==n?"":function(n,o){if(null==n)return"";var e,t,i,a={},s={},u="",c="",f="",h=2,p=3,l=2,d=[],g=0,v=0;for(i=0;i<n.length;i++)if(u=n.charAt(i),Object.prototype.hasOwnProperty.call(a,u)||(a[u]=p++,s[u]=!0),c=f+u,Object.prototype.hasOwnProperty.call(a,c))f=c;else{if(Object.prototype.hasOwnProperty.call(s,f)){if(256>f.charCodeAt(0)){for(e=0;l>e;e++)g<<=1,6==++v&&(v=0,d.push(o(g)),g=0);for(t=f.charCodeAt(0),e=0;8>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}else{for(t=1,e=0;l>e;e++)g=g<<1|t,6==++v&&(v=0,d.push(o(g)),g=0),t=0;for(t=f.charCodeAt(0),e=0;16>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}0==--h&&(h=Math.pow(2,l),l++),delete s[f]}else for(t=a[f],e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;0==--h&&(h=Math.pow(2,l),l++),a[c]=p++,f=u}if(""!==f){if(Object.prototype.hasOwnProperty.call(s,f)){if(256>f.charCodeAt(0)){for(e=0;l>e;e++)g<<=1,6==++v&&(v=0,d.push(o(g)),g=0);for(t=f.charCodeAt(0),e=0;8>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}else{for(t=1,e=0;l>e;e++)g=g<<1|t,6==++v&&(v=0,d.push(o(g)),g=0),t=0;for(t=f.charCodeAt(0),e=0;16>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1}0==--h&&(h=Math.pow(2,l),l++),delete s[f]}else for(t=a[f],e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;0==--h&&(h=Math.pow(2,l),l++)}for(t=2,e=0;l>e;e++)g=g<<1|1&t,6==++v&&(v=0,d.push(o(g)),g=0),t>>=1;for(;;){if(g<<=1,6==++v){d.push(o(g));break}}return d.join("")}(n,function(n){return r.charAt(n)})},decompressFromEncodedURIComponent:function(r){return null==r?"":""==r?null:o(function(r){return String.fromCharCode(r)},64,function(){if(n.index>=n.val.length)return undefined;var o=n.val.charCodeAt(n.index);return n.index++,o>64&&91>o?o-65:(o>96&&123>o?o-97+26:(o>47&&58>o?o-48+52:("-"===String.fromCharCode(o)?62:("_"===String.fromCharCode(o)?63:undefined))))})},_n:n,_r:r}}();
+
+    // ── App Logic ──
+    var currentLink = '';
+
+    function init() {
+      var hash = location.hash.slice(1);
+      if (hash && hash.length > 0) {
+        showViewer(hash);
+      } else {
+        showEditor();
+      }
+    }
+
+    function showEditor() {
+      document.getElementById('editor').classList.remove('hidden');
+      document.getElementById('viewer').classList.add('hidden');
+    }
+
+    function showViewer(hash) {
+      document.getElementById('editor').classList.add('hidden');
+      document.getElementById('viewer').classList.remove('hidden');
+
+      LZString._n.val = hash;
+      LZString._n.index = 0;
+      var html = LZString.decompressFromEncodedURIComponent(hash);
+
+      if (!html) {
+        document.getElementById('frame').srcdoc = '<body style="background:#0a0a0f;color:#e07a5f;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh"><p>Failed to decode. The link may be corrupted.</p></body>';
+        return;
+      }
+
+      document.getElementById('frame').srcdoc = html;
+      document.getElementById('editLink').href = 'javascript:editFromView()';
+    }
+
+    function generate() {
+      var code = document.getElementById('code').value;
+      if (!code.trim()) return;
+
+      var compressed = LZString.compressToEncodedURIComponent(code);
+      var base = location.origin + location.pathname;
+      currentLink = base + '#' + compressed;
+
+      document.getElementById('linkText').textContent = currentLink;
+      document.getElementById('linkOutput').classList.add('show');
+
+      var len = currentLink.length;
+      var countEl = document.getElementById('charCount');
+      countEl.textContent = len.toLocaleString() + ' chars in URL';
+      if (len > 8000) {
+        countEl.textContent += ' — very long URL, may not work in all browsers';
+        countEl.classList.add('warn');
+      } else {
+        countEl.classList.remove('warn');
+      }
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(currentLink).then(function() {
+        var badge = document.getElementById('copiedBadge');
+        badge.classList.add('show');
+        setTimeout(function() { badge.classList.remove('show'); }, 1500);
+      });
+    }
+
+    function preview() {
+      var code = document.getElementById('code').value;
+      if (!code.trim()) return;
+      var w = window.open('', '_blank');
+      w.document.open();
+      w.document.write(code);
+      w.document.close();
+    }
+
+    function editFromView() {
+      var hash = location.hash.slice(1);
+      LZString._n.val = hash;
+      LZString._n.index = 0;
+      var html = LZString.decompressFromEncodedURIComponent(hash);
+      location.hash = '';
+      showEditor();
+      if (html) document.getElementById('code').value = html;
+    }
+
+    // Handle tab key in textarea
+    document.addEventListener('DOMContentLoaded', function() {
+      init();
+      var ta = document.getElementById('code');
+      if (ta) {
+        ta.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            var s = this.selectionStart, end = this.selectionEnd;
+            this.value = this.value.substring(0, s) + '  ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = s + 2;
+          }
+        });
+      }
+    });
+
+    // React to hash changes (back/forward)
+    window.addEventListener('hashchange', init);
+  </script>
+</body>
+</html>
