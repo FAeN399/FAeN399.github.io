@@ -118,6 +118,47 @@
     }
     .warn { color: #e07a5f; }
 
+    /* ── Drop Zone ── */
+    .dropzone {
+      border: 2px dashed #1e1e30;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: #c8a96e;
+      background: rgba(200, 169, 110, 0.04);
+    }
+    .dropzone .dz-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+      color: #333;
+      transition: color 0.2s;
+    }
+    .dropzone:hover .dz-icon, .dropzone.dragover .dz-icon { color: #c8a96e; }
+    .dropzone .dz-text {
+      color: #555;
+      font-size: 0.85rem;
+    }
+    .dropzone .dz-text strong { color: #c8a96e; }
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .dz-filename {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #c8a96e;
+      display: none;
+    }
+    .dz-filename.show { display: block; }
+
     /* ── Viewer Mode ── */
     .viewer-bar {
       position: fixed;
@@ -157,7 +198,15 @@
   <!-- ── EDITOR ── -->
   <div id="editor" class="editor-wrap hidden">
     <h1>Canvas Paste</h1>
-    <p class="subtitle">Paste HTML below. Get a shareable link. No deploy needed.</p>
+    <p class="subtitle">Paste HTML below, or upload a file. Get a shareable link. No deploy needed.</p>
+
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept=".html,.htm,.txt,.svg,.xml">
+      <div class="dz-icon">&#8593;</div>
+      <div class="dz-text">Drop an HTML file here or <strong>click to browse</strong></div>
+      <div class="dz-filename" id="dzFilename"></div>
+    </div>
+
     <textarea id="code" placeholder="Paste your HTML here..." spellcheck="false"></textarea>
     <div class="actions">
       <button class="primary" onclick="generate()">Generate Link</button>
@@ -270,9 +319,50 @@
       if (html) document.getElementById('code').value = html;
     }
 
+    // ── File Upload Handling ──
+    function handleFile(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var content = e.target.result;
+        document.getElementById('code').value = content;
+        var nameEl = document.getElementById('dzFilename');
+        nameEl.textContent = 'Loaded: ' + file.name + ' (' + (content.length / 1024).toFixed(1) + ' KB)';
+        nameEl.classList.add('show');
+      };
+      reader.readAsText(file);
+    }
+
     // Handle tab key in textarea
     document.addEventListener('DOMContentLoaded', function() {
       init();
+
+      // File input change
+      var fileInput = document.getElementById('fileInput');
+      if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+          if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+      }
+
+      // Drag and drop
+      var dz = document.getElementById('dropzone');
+      if (dz) {
+        dz.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          dz.classList.add('dragover');
+        });
+        dz.addEventListener('dragleave', function() {
+          dz.classList.remove('dragover');
+        });
+        dz.addEventListener('drop', function(e) {
+          e.preventDefault();
+          dz.classList.remove('dragover');
+          if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+        });
+      }
+
+      // Tab key in textarea
       var ta = document.getElementById('code');
       if (ta) {
         ta.addEventListener('keydown', function(e) {
