@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas | FAeN399</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #1a1a2e;
+      padding-bottom: 1.5rem;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: #12121a;
+      border: 1px solid #1a1a2e;
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card:hover {
+      border-color: #c8a96e;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(200, 169, 110, 0.1);
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #f0f0f0;
+      margin-bottom: 0.5rem;
+    }
+    .card .meta {
+      font-size: 0.8rem;
+      color: #555;
+    }
+    .empty {
+      color: #444;
+      font-style: italic;
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+    }
+    .instructions {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #12121a;
+      border: 1px solid #1a1a2e;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: #1a1a2e;
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+      color: #c8a96e;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Canvas</h1>
+  <p class="subtitle">HTML showcase — drop files here and share the link</p>
+
+  <div class="gallery" id="gallery">
+    <p class="empty">No pages yet. Add HTML files to the canvas/ folder.</p>
+  </div>
+
+  <div class="instructions">
+    <strong>How to use:</strong> Add any <code>.html</code> file to the <code>canvas/</code> folder in your
+    <code>FAeN399.github.io</code> repo. It becomes instantly shareable at
+    <code>https://faen399.github.io/canvas/your-file.html</code>
+  </div>
+</body>
+</html>
