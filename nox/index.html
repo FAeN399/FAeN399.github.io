@@ -25,8 +25,21 @@ h1 {
 }
 .track-title { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
 .track-info { color: #555; font-size: 0.8rem; margin-bottom: 20px; }
-audio { width: 100%; filter: sepia(20%) saturate(70%); }
-audio::-webkit-media-controls-panel { background: #1a1a1a; }
+audio { width: 100%; height: 54px; border-radius: 30px; }
+audio::-webkit-media-controls-panel { background: #1a1a1a; border-radius: 30px; }
+audio::-webkit-media-controls-play-button {
+  background-color: #ff3333; border-radius: 50%;
+  width: 40px; height: 40px;
+}
+.play-big {
+  display: inline-block; margin-bottom: 15px;
+  background: #ff3333; color: #fff; border: none; border-radius: 50%;
+  width: 70px; height: 70px; font-size: 2rem; cursor: pointer;
+  box-shadow: 0 0 25px rgba(255,51,51,0.4);
+  transition: all 0.2s;
+}
+.play-big:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(255,51,51,0.6); }
+.play-big:active { transform: scale(0.95); }
 .lyrics {
   background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px;
   padding: 25px; text-align: left; line-height: 1.8;
@@ -47,7 +60,8 @@ audio::-webkit-media-controls-panel { background: #1a1a1a; }
   <div class="player">
     <div class="track-title">Scripture</div>
     <div class="track-info">148 BPM · TR-808 · Bryce + Guy · Double-tracked</div>
-    <audio controls preload="metadata">
+    <button class="play-big" onclick="var a=document.getElementById('player');if(a.paused){a.play();this.textContent='❚❚'}else{a.pause();this.textContent='▶'}">▶</button>
+    <audio id="player" controls preload="metadata" onended="document.querySelector('.play-big').textContent='▶'">
       <source src="nox_scripture.mp3" type="audio/mpeg">
     </audio>
   </div>
