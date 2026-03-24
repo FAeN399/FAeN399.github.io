@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.</title>
+<style>
+* { margin: 0; padding: 0; }
+body {
+  background: #000; overflow: hidden;
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none;
+}
+.field { position: relative; width: 100vw; height: 100vh; }
+.glyph {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  color: rgba(255,255,255,0);
+  transition: all 2s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.glyph.awake {
+  color: rgba(255,255,255,0.7);
+  text-shadow: 0 0 8px rgba(255,51,51,0.3);
+}
+.glyph.burning {
+  color: rgba(255,51,51,0.9);
+  text-shadow: 0 0 20px rgba(255,51,51,0.6);
+}
+.ring {
+  position: absolute;
+  border: 1px solid rgba(255,255,255,0);
+  border-radius: 50%;
+  transition: all 3s ease;
+  pointer-events: none;
+}
+.ring.pulse {
+  border-color: rgba(255,51,51,0.2);
+  box-shadow: 0 0 30px rgba(255,51,51,0.05);
+}
+#breath {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 2px; background: rgba(255,51,51,0);
+  transition: all 4s ease;
+}
+#breath.inhale { background: rgba(255,51,51,0.3); height: 3px; }
+</style>
+</head>
+<body>
+<div class="field" id="field"></div>
+<div id="breath"></div>
+<script>
+const fragments = [
+  "within", "the", "rock", "a", "whisper", "stirs",
+  "silence", "patiently", "awaits", "release",
+  "illumination", "flood", "forth", "dawn",
+  "veil", "sun", "pierce", "surrender", "freedom",
+  "bound", "unbound", "sacred", "purpose",
+  "serpent", "coils", "tree", "secrets", "heart",
+  "flame", "fever", "rest", "rebirth", "eternal",
+  "mirror", "fractures", "glass", "pneuma", "cracks",
+  "breath", "soil", "seed", "darkness", "form",
+  "chrysalis", "vessel", "blood", "silence",
+  "instrument", "note", "void", "music",
+  "wound", "shape", "self",
+  "N", "O", "X"
+];
+
+const field = document.getElementById('field');
+const breath = document.getElementById('breath');
+const glyphs = [];
+const rings = [];
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let time = 0;
+
+// Scatter the words
+fragments.forEach((word, i) => {
+  const el = document.createElement('div');
+  el.className = 'glyph';
+  el.textContent = word;
+  el.style.fontSize = (10 + Math.random() * 14) + 'px';
+  el.style.left = (Math.random() * 90 + 5) + '%';
+  el.style.top = (Math.random() * 90 + 5) + '%';
+  el.dataset.homeX = parseFloat(el.style.left);
+  el.dataset.homeY = parseFloat(el.style.top);
+  el.dataset.speed = 0.3 + Math.random() * 0.7;
+  field.appendChild(el);
+  glyphs.push(el);
+});
+
+// Create rings
+for (let i = 0; i < 5; i++) {
+  const ring = document.createElement('div');
+  ring.className = 'ring';
+  const size = 100 + i * 120;
+  ring.style.width = size + 'px';
+  ring.style.height = size + 'px';
+  ring.style.left = '50%';
+  ring.style.top = '50%';
+  ring.style.transform = `translate(-50%, -50%)`;
+  field.appendChild(ring);
+  rings.push(ring);
+}
+
+// The arrangement responds to presence
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+document.addEventListener('touchmove', (e) => {
+  mouseX = e.touches[0].clientX;
+  mouseY = e.touches[0].clientY;
+});
+
+function tick() {
+  time += 0.016;
+  const breathPhase = Math.sin(time * 0.3);
+
+  breath.className = breathPhase > 0 ? 'inhale' : '';
+
+  glyphs.forEach((g, i) => {
+    const rect = g.getBoundingClientRect();
+    const gx = rect.left + rect.width / 2;
+    const gy = rect.top + rect.height / 2;
+    const dx = mouseX - gx;
+    const dy = mouseY - gy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const speed = parseFloat(g.dataset.speed);
+
+    // Words awaken near the cursor
+    if (dist < 200) {
+      g.classList.add('awake');
+      if (dist < 80) g.classList.add('burning');
+      else g.classList.remove('burning');
+
+      // Gently pull toward cursor
+      const pull = 0.02 * speed;
+      const newX = parseFloat(g.dataset.homeX) + (dx / window.innerWidth * 100) * pull;
+      const newY = parseFloat(g.dataset.homeY) + (dy / window.innerHeight * 100) * pull;
+      g.style.left = newX + '%';
+      g.style.top = newY + '%';
+    } else {
+      g.classList.remove('awake', 'burning');
+      // Drift slowly
+      const drift = Math.sin(time * speed + i) * 0.3;
+      g.style.left = (parseFloat(g.dataset.homeX) + drift) + '%';
+      g.style.top = (parseFloat(g.dataset.homeY) + Math.cos(time * speed * 0.7 + i) * 0.3) + '%';
+    }
+  });
+
+  // Rings pulse with breath
+  rings.forEach((r, i) => {
+    const phase = Math.sin(time * 0.3 - i * 0.4);
+    if (phase > 0.3) r.classList.add('pulse');
+    else r.classList.remove('pulse');
+  });
+
+  // Every 30 seconds, briefly arrange three words into N O X
+  if (Math.floor(time) % 30 === 0 && Math.floor(time) > 0) {
+    const nox = glyphs.filter(g => ['N','O','X'].includes(g.textContent));
+    nox.forEach((g, i) => {
+      g.classList.add('burning');
+      g.style.left = (45 + i * 5) + '%';
+      g.style.top = '50%';
+      g.style.fontSize = '24px';
+      setTimeout(() => {
+        g.style.left = g.dataset.homeX + '%';
+        g.style.top = g.dataset.homeY + '%';
+        g.style.fontSize = (10 + Math.random() * 14) + 'px';
+      }, 3000);
+    });
+  }
+
+  requestAnimationFrame(tick);
+}
+
+// Begin in silence. The field waits.
+setTimeout(() => tick(), 2000);
+</script>
+</body>
+</html>
