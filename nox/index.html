@@ -3,94 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOX — Scripture</title>
+<title>NOX — Demi Hymns</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
   background: #0a0a0a; color: #e0e0e0; 
   font-family: 'Courier New', monospace;
   min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 20px;
+  align-items: center; padding: 30px 20px;
 }
 .container { max-width: 600px; width: 100%; text-align: center; }
 h1 { 
   font-size: 4rem; letter-spacing: 0.5em; color: #fff;
   text-shadow: 0 0 30px rgba(255,255,255,0.3);
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
-.subtitle { color: #666; font-size: 0.9rem; margin-bottom: 40px; }
+.album { color: #ff3333; font-size: 1.1rem; letter-spacing: 0.3em; margin-bottom: 5px; }
+.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 35px; }
 .player {
   background: #111; border: 1px solid #222; border-radius: 8px;
-  padding: 30px; margin-bottom: 30px;
+  padding: 25px; margin-bottom: 20px;
 }
-.track-title { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
-.track-info { color: #555; font-size: 0.8rem; margin-bottom: 20px; }
-audio { width: 100%; height: 54px; border-radius: 30px; }
-audio::-webkit-media-controls-panel { background: #1a1a1a; border-radius: 30px; }
-audio::-webkit-media-controls-play-button {
-  background-color: #ff3333; border-radius: 50%;
-  width: 40px; height: 40px;
-}
+.track-title { font-size: 1.2rem; color: #fff; margin-bottom: 3px; }
+.track-info { color: #555; font-size: 0.75rem; margin-bottom: 15px; }
 .play-big {
-  display: inline-block; margin-bottom: 15px;
+  display: inline-block; margin-bottom: 12px;
   background: #ff3333; color: #fff; border: none; border-radius: 50%;
-  width: 70px; height: 70px; font-size: 2rem; cursor: pointer;
+  width: 60px; height: 60px; font-size: 1.6rem; cursor: pointer;
   box-shadow: 0 0 25px rgba(255,51,51,0.4);
   transition: all 0.2s;
 }
 .play-big:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(255,51,51,0.6); }
 .play-big:active { transform: scale(0.95); }
+audio { width: 100%; height: 40px; }
 .lyrics {
   background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px;
-  padding: 25px; text-align: left; line-height: 1.8;
-  font-size: 0.85rem; color: #888;
+  padding: 20px; text-align: left; line-height: 1.8;
+  font-size: 0.8rem; color: #888; margin-top: 8px;
 }
 .lyrics .punch { color: #fff; font-weight: bold; }
 .lyrics .nox { color: #ff3333; font-weight: bold; letter-spacing: 0.2em; }
+details { cursor: pointer; }
+details summary { color: #555; font-size: 0.8rem; margin-top: 8px; }
 .footer { margin-top: 40px; color: #333; font-size: 0.7rem; }
 .spell { color: #444; font-style: italic; margin-bottom: 30px; font-size: 0.8rem; }
+.divider { border: none; border-top: 1px solid #1a1a1a; margin: 5px 0; }
 </style>
+<script>
+function playTrack(id, btn) {
+  document.querySelectorAll('audio').forEach(a => { a.pause(); });
+  document.querySelectorAll('.play-big').forEach(b => { b.textContent = '▶'; });
+  var a = document.getElementById(id);
+  if (a.paused) { a.play(); btn.textContent = '❚❚'; }
+  else { a.pause(); btn.textContent = '▶'; }
+}
+</script>
 </head>
 <body>
 <div class="container">
   <h1>NOX</h1>
-  <div class="subtitle">the dark that set you free</div>
+  <div class="album">DEMI HYMNS</div>
+  <div class="subtitle">half-earth songs from the Librum Demiterra</div>
   <div class="spell">Fee Fi Fo Nox. N opens. O widens the gate. X cuts and closes.</div>
   
   <div class="player">
-    <div class="track-title">Scripture</div>
+    <div class="track-title">1. Scripture</div>
     <div class="track-info">148 BPM · TR-808 · Bryce + Guy · Double-tracked</div>
-    <button class="play-big" onclick="var a=document.getElementById('player');if(a.paused){a.play();this.textContent='❚❚'}else{a.pause();this.textContent='▶'}">▶</button>
-    <audio id="player" controls preload="metadata" onended="document.querySelector('.play-big').textContent='▶'">
+    <button class="play-big" onclick="playTrack('p1',this)">▶</button>
+    <audio id="p1" controls preload="metadata" onended="document.querySelectorAll('.play-big')[0].textContent='▶'">
       <source src="nox_scripture.mp3" type="audio/mpeg">
     </audio>
+    <details>
+      <summary>lyrics</summary>
+      <div class="lyrics">
+        <span class="punch">SCALES SHINE BRIGHT</span> the GATE BITES BACK the FLAME WRITES FAST,<br>
+        <span class="punch">BLACK NIGHT CRACKS</span> and STARS FALL FLAT through SHATTERED GLASS,<br>
+        DEAD MEN PRAY the SERPENT EATS the WORDS THEY CAST,<br>
+        <span class="nox">NOX</span> HITS FIRST and <span class="nox">NOX</span> HITS LAST — the DARK won't PASS.<br><br>
+        <span class="punch">BURN the THRONE</span> and BREAK the BONE and GRIND the STONE to SAND,<br>
+        CHROME DOME ZONE the SERPENT OWNS the LAND you PLANNED,<br>
+        SCALES reFLECT what EYES reJECT the TRUTH you BANNED,<br>
+        <span class="nox">NOX</span> on MIC the HALF-earth CHILD with SCRIPTURE in his HAND.<br><br>
+        <span class="punch">KNOCK KNOCK KNOCK</span> the MOUTH devours <span class="punch">KNOCK KNOCK KNOCK</span> it FEEDS,<br>
+        LOCK STOCK ROCK the FOUNDATION CRACKS beneath your DEEDS,<br>
+        COIL COIL COIL the SERPENT SHEDS its SCALES like SEEDS,<br>
+        <span class="nox">NOX NOX NOX</span> the DARK that BLEEDS the LIGHT that LEADS.<br><br>
+        FEE FI FO the VEIL drops LOW the SCARS still GLOW,<br>
+        MAPS on SOULS the UNSEEN HAND that GUIDES the FLOW,<br>
+        FIRE BURNS but NEVER LEARNS — the FLAME don't KNOW,<br>
+        <span class="nox">NOX</span> was HERE before the YEAR before the SHOW.<br>
+        <span class="nox">NOX</span>. the DARK that SET you FREE.
+      </div>
+    </details>
   </div>
 
-  <div class="lyrics">
-    <span class="punch">SCALES SHINE BRIGHT</span> the GATE BITES BACK the FLAME WRITES FAST,<br>
-    <span class="punch">BLACK NIGHT CRACKS</span> and STARS FALL FLAT through SHATTERED GLASS,<br>
-    DEAD MEN PRAY the SERPENT EATS the WORDS THEY CAST,<br>
-    <span class="nox">NOX</span> HITS FIRST and <span class="nox">NOX</span> HITS LAST — the DARK won't PASS.<br><br>
-    
-    <span class="punch">BURN the THRONE</span> and BREAK the BONE and GRIND the STONE to SAND,<br>
-    CHROME DOME ZONE the SERPENT OWNS the LAND you PLANNED,<br>
-    SCALES reFLECT what EYES reJECT the TRUTH you BANNED,<br>
-    <span class="nox">NOX</span> on MIC the HALF-earth CHILD with SCRIPTURE in his HAND.<br><br>
-    
-    <span class="punch">KNOCK KNOCK KNOCK</span> the MOUTH devours <span class="punch">KNOCK KNOCK KNOCK</span> it FEEDS,<br>
-    LOCK STOCK ROCK the FOUNDATION CRACKS beneath your DEEDS,<br>
-    COIL COIL COIL the SERPENT SHEDS its SCALES like SEEDS,<br>
-    <span class="nox">NOX NOX NOX</span> the DARK that BLEEDS the LIGHT that LEADS.<br><br>
-    
-    FEE FI FO the VEIL drops LOW the SCARS still GLOW,<br>
-    MAPS on SOULS the UNSEEN HAND that GUIDES the FLOW,<br>
-    FIRE BURNS but NEVER LEARNS — the FLAME don't KNOW,<br>
-    <span class="nox">NOX</span> was HERE before the YEAR before the SHOW.<br>
-    <span class="nox">NOX</span>. the DARK that SET you FREE.
+  <hr class="divider">
+
+  <div class="player">
+    <div class="track-title">2. Monolith</div>
+    <div class="track-info">148 BPM · TR-808 · HFC Male + Guy · Chopper</div>
+    <button class="play-big" onclick="playTrack('p2',this)">▶</button>
+    <audio id="p2" controls preload="metadata" onended="document.querySelectorAll('.play-big')[1].textContent='▶'">
+      <source src="nox_monolith.mp3" type="audio/mpeg">
+    </audio>
+    <details>
+      <summary>lyrics</summary>
+      <div class="lyrics">
+        Black on black on black the room got smaller when I entered,<br>
+        every exit disappeared the walls remember what surrendered,<br>
+        swallowed all the light you brought and gave you back the quiet,<br>
+        every prayer you ever whispered fed the thing you tried to hide from. <span class="nox">Nox.</span><br><br>
+        Mountains folded flat and every river ran in reverse,<br>
+        the alphabet deleted every letter from the verse,<br>
+        the clock forgot the numbers and the hands refused to turn,<br>
+        the candle wasn't melting it was teaching wax to burn. <span class="nox">Nox.</span><br><br>
+        Kingdoms built on sand and every king became the weather,<br>
+        the throne dissolved to nothing and the crown became a feather,<br>
+        the army marched in circles till the circles ate the soldiers,<br>
+        the generals gave orders to the silence getting colder. <span class="nox">Nox.</span><br><br>
+        Fee Fi Fo the gate is not a gate it's just a mouth,<br>
+        everything that entered never bothered coming out,<br>
+        north became the south and east forgot the name of west,<br>
+        the compass spun forever and it never came to rest.<br>
+        <span class="nox">Nox.</span>
+      </div>
+    </details>
   </div>
 
   <div class="footer">
-    Session 007 · March 24, 2026 · Built from Librum Demiterra & The Great Wall<br>
+    Session 007 · March 24, 2026 · Demi Hymns<br>
+    Built from Librum Demiterra & The Great Wall<br>
     Fashadow's scripture · Nox's voice
   </div>
 </div>
